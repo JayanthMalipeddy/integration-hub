@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-10-24T11:06:33.934745+00:00",
+  "run_id": "04d734fc9a8e4bc9a1d3d19897aae16a",
+  "status": "completed",
+  "ticket_id": "REC-04d734fc",
+  "real_model": [
+    {
+      "provider": "ollama",
+      "model": "qwen2.5:latest",
+      "input_tokens": 241,
+      "output_tokens": 57,
+      "cost_usd": 0.0,
+      "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+      "fallback": false,
+      "node": "plan",
+      "latency_ms": 23375.92
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen2.5:latest",
+      "input_tokens": 607,
+      "output_tokens": 278,
+      "cost_usd": 0.0,
+      "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+      "fallback": false,
+      "node": "analyze",
+      "latency_ms": 56146.24
+    }
+  ],
+  "durable_resume": true,
+  "no_write_before_approval": true,
+  "canonical_revalidation": [
+    {
+      "run_id": "b6e68277feab4a458de9f3c1c6c120a6",
+      "canonical_sources_valid": true,
+      "passed": false
+    },
+    {
+      "run_id": "15f3d0a92961469b934912a53cb02d53",
+      "canonical_sources_valid": true,
+      "passed": true
+    },
+    {
+      "run_id": "6e4193a9779d4f5e9eee435f1ce74ad1",
+      "canonical_sources_valid": true,
+      "passed": true
+    },
+    {
+      "run_id": "097711af53c6478d80865b3c55df8c9b",
+      "canonical_sources_valid": true,
+      "passed": false
+    },
+    {
+      "run_id": "5b357ae8f13e4a3d8d47c57b8e5b2f7e",
+      "canonical_sources_valid": true,
+      "passed": true
+    }
+  ]
+}

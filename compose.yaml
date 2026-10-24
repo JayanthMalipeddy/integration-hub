@@ -1,0 +1,41 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes: ["ollama-models:/root/.ollama"]
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    environment:
+      AI_PROFILE: ${AI_PROFILE:-local_free}
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:latest}
+      EMBED_MODEL: ${EMBED_MODEL:-nomic-embed-text:latest}
+      VECTOR_STORE: ${VECTOR_STORE:-auto}
+      CHROMA_MODE: ${CHROMA_MODE:-embedded}
+      CHROMA_HOST: ${CHROMA_HOST:-host.docker.internal}
+      CHROMA_PORT: ${CHROMA_PORT:-8081}
+      DATA_DIR: /app/runtime
+      API_TOKEN: ${API_TOKEN:-}
+      ALLOW_CLOUD: ${ALLOW_CLOUD:-false}
+      ALLOW_PAID: ${ALLOW_PAID:-false}
+      CLOUD_DATA_CONSENT: ${CLOUD_DATA_CONSENT:-false}
+      ALLOW_LOCAL_FALLBACK: ${ALLOW_LOCAL_FALLBACK:-false}
+      CLOUD_API_KEY: ${CLOUD_API_KEY:-}
+      CLOUD_MODEL: ${CLOUD_MODEL:-}
+      MAX_COST_USD: ${MAX_COST_USD:-0}
+      CLOUD_INPUT_USD_PER_MILLION: ${CLOUD_INPUT_USD_PER_MILLION:-0}
+      CLOUD_OUTPUT_USD_PER_MILLION: ${CLOUD_OUTPUT_USD_PER_MILLION:-0}
+    volumes: ["hub-data:/app/runtime"]
+    depends_on: [ollama]
+    restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    ports: ["127.0.0.1:5180:80"]
+    depends_on: [backend]
+volumes:
+  ollama-models:
+  hub-data:

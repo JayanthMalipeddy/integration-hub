@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-10-24T13:29:58.197858+00:00",
+  "chroma": {
+    "provider": "chroma",
+    "status": "ready",
+    "mode": "http",
+    "endpoint": "http://127.0.0.1:8082",
+    "collection": "integration_hub_f247db265d73d13e979438b5"
+  },
+  "indexed_chunks": 4,
+  "query": "HTTP 401 invalid_token token expired",
+  "top_document": "rb-auth",
+  "existing_collections_unchanged": true,
+  "other_collection_counts": {},
+  "profile": "local_free",
+  "paid_enabled": false,
+  "note": "Real local HTTP retrieval check, not a rerun of the model benchmark."
+}
