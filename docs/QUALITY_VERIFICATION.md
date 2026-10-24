@@ -49,7 +49,6 @@ Vector timing includes embedding and HTTP latency. The four-runbook workload doe
 - Holdout cases are newly authored synthetic scenarios, frozen before evaluation; they are not independent production incidents. One model run per case does not establish reliability across repeated runs.
 - Exact quotation checks do not prove semantic support. Completion uses a simulated operator; actual incident resolution and human-rated usefulness are not measured.
 - Cloud services remain disabled and live-unverified. The application remains single-user with one investigation admitted per backend process.
-- Video recording and GitHub publication were excluded from this work.
 
 No academy grade is claimed. The original evaluation report remains the review of the earlier implementation.
 

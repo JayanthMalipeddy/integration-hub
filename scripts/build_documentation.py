@@ -183,10 +183,6 @@ def build(source,filename,title):
         elif re.match(r'^\d+\. ',line):text_runs(doc.add_paragraph(style='List Number'),re.sub(r'^\d+\. ','',line))
         elif line:
             p=doc.add_paragraph();text_runs(p,line)
-            if re.match(r'^(SHOW|DO|SAY|CHECK):',line):
-                for r in p.runs:
-                    if line.startswith('SAY:'):r.font.size=Pt(11)
-                if not line.startswith('SAY:'):p.paragraph_format.space_after=Pt(6)
         i+=1
     output=DOCS/filename;doc.save(output)
     # Reopen each file and inspect package structure instead of assuming generation worked.
@@ -200,7 +196,6 @@ if __name__=='__main__':
     architecture()
     build('TECHNICAL_SPECIFICATION.md','Integration_Hub_Technical_Specification_Quality.docx','Technical specification')
     build('PROJECT_SPECIFICATION.md','Integration_Hub_Project_Specification_Quality.docx','Project specification')
-    build('VIDEO_DEMO_SCRIPT.md','Integration_Hub_Video_Demo_Script.docx','Video demonstration script')
 
     if (DOCS / "QUALITY_VERIFICATION.md").exists():
         build("QUALITY_VERIFICATION.md", "Integration_Hub_Quality_Verification.docx", "Quality verification")

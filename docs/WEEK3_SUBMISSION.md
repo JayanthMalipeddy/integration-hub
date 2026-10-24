@@ -1,35 +1,30 @@
-# Week 3 submission notes
+# Integration Hub: project notes
 
-## Project overview
+## Why I chose this project
 
-Integration Hub helps integration support engineers investigate API failures through a browser workspace. The builder's experience with webMethods, MuleSoft, API gateways, messaging and production support shaped the selected use case. Unlike a one-turn RAG answer, it chooses a tool, maintains shared state, validates evidence, pauses for human approval and resumes with an auditable local write.
+I built Integration Hub around a problem familiar from integration support: working out why an API failed and finding the evidence needed to act on it. My experience with webMethods, MuleSoft, API gateways and messaging shaped the use case.
 
-## Dataset and prompts
+The workspace brings logs, runbooks and investigation history together. The agent selects a tool, checks source quotations and proposes a recovery plan. Creating a local ticket requires human approval, and the investigation can resume after a restart.
 
-Four synthetic runbooks cover expired credentials, partner rate limits, upstream timeouts and JDBC pool exhaustion. Six synthetic cases add insufficient evidence and a malicious instruction embedded in a log. No office/customer data is included in the demo corpus. The full dataset is in `data/`.
+## Data and implementation
 
-Coding instructions: the Week 3 handout and user-supplied vendor-independent platform prompt. Implementation reasoning: local-first operation, concrete agent decisions, canonical storage and strict distinction between mocked tests and actual benchmark outcomes. Runtime prompts are in `backend/app/workflow.py`: planner tool selection and evidence-constrained analyst synthesis, both with structured schemas and an untrusted-input instruction.
+The corpus contains four synthetic runbooks covering expired credentials, partner rate limits, upstream timeouts and JDBC pool exhaustion. The current evaluation includes six baseline cases and twelve newly authored holdout cases, including missing evidence and malicious instructions embedded in logs. No customer or office data is included.
 
-## Iterations and observations
+I used the Week 3 handout and the vendor-independent platform prompt to define the scope. Runtime prompts in `backend/app/workflow.py` guide tool selection and evidence-based analysis. Ollama runs the local models, Chroma indexes the runbooks, and SQLite stores canonical records and checkpoints. Cloud adapters are optional; their live behavior has not been verified.
 
-1. Started with a separate project folder and ports to preserve the completed Week 2 build.
-2. Verified the installed Ollama models and made a real Qwen call before relying on the architecture.
-3. Implemented a bounded graph with persistent checkpoints and a real interrupt before local writes.
-4. Added source-quote and canonical-record checks. The actual model sometimes omitted required evidence despite a schema-valid answer; that failure is visible and safely handed off.
-5. Built eleven connected workspace screens and fed evaluations from stored measurements rather than fixed scores.
-6. Added cloud adapter contracts and explicit export commands, keeping live cloud integrations disabled without consent/keys.
-7. A Windows backup test revealed that sqlite context managers do not close connections; explicit closing fixed the file-lock failure.
+## What changed during development
 
-Learning: schema validity is not grounding; a quote can exist while the answer lacks a required source. Approval must be persistent and tied to the exact state. Local-first portability requires canonical records outside vendor indexes. On this tiny corpus, inexpensive lexical matching was much faster than embedding-based retrieval with equal top-1 results; that does not establish a general ranking.
+- Added persistent checkpoints and an approval pause before local writes.
+- Checked quotations against stored sources instead of treating valid JSON as proof of a grounded answer.
+- Added a bounded reflection loop so the agent can retry an analysis using validation feedback. A real replay of the partner-quota citation failure passed after one correction.
+- Connected the eleven workspace views to stored records and measured evaluation results.
+- Split the frontend into pages, components and hooks to make it easier to maintain.
+- Fixed a Windows backup issue by explicitly closing SQLite connections.
 
-## Live demo plan — under five minutes
+## Results and lessons
 
-- 0:00–0:35: Explain the user/problem and show the Overview. State that the data is synthetic.
-- 0:35–1:00: Start the authentication incident and show the agent's available read-only tools.
-- 1:00–2:00: While inference runs, show knowledge documents, provider status and the workflow trace. Explain local inference latency honestly.
-- 2:00–3:10: Open a completed investigation if the live run is still processing. Show hypothesis, uncertainty, source quotations and the approval pause.
-- 3:10–3:45: Approve the local ticket; show the new ticket/memory. Explain that no external service was restarted.
-- 3:45–4:15: Submit the injected-log scenario and show immediate human handoff.
-- 4:15–4:50: Show 83.33% task outcome, the failed rate-limit citation case, real retrieval timings and cloud profiles marked not run.
+The latest saved benchmark passed 15 of 18 task checks (83.33%). All 12 eligible cases completed simulated approval successfully. Three cases failed the planner-choice checks and ended in a human handoff. The full results and limitations are in [quality verification](QUALITY_VERIFICATION.md).
 
-This is a demo outline for submission preparation, not a completed video. The handout also requires a shared Google Doc, a <=5-minute recording and a GitHub link. Those external deliverables have not been published or submitted automatically. No final submission form was sent.
+My main lesson was that a well-formed answer can still lack the evidence needed to support it. Validation and correction need to be part of the workflow. Human approval also needs to survive restarts and remain tied to the exact proposed action.
+
+Lexical retrieval was faster than vector retrieval on this small corpus, with equal top-1 results. That is a useful local measurement, but it does not establish which method will work best on a larger dataset. More independent cases and human-reviewed findings are needed before making broader accuracy claims.

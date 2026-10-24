@@ -7,3 +7,11 @@ __pycache__/
 runtime/
 *.log
 *.tsbuildinfo
+
+# Local presentation materials and original review archives
+/docs/local-presentation/
+/docs/VIDEO_DEMO_SCRIPT.md
+/docs/Integration_Hub_Video_Demo_Script.docx
+/ACADEMY_PROJECT_EVALUATION_REPORT.md
+/ACADEMY_EVALUATION_CROSSCHECK.md
+/docs/Integration_Hub_Project_Specification.docx

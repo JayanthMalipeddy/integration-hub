@@ -105,9 +105,7 @@ No formal production SLA, concurrent-team capacity, operator-time saving or clou
 | Optional cloud adapters | Implemented with mocked contracts; live verification pending |
 | Technical specification and architecture diagram | Included in Markdown and Word |
 | Project specification | This document, supplied in Markdown and Word |
-| Video demonstration script | Timed screen-by-screen instructions; recording not created |
 | Setup, deployment, security and migration documentation | Included and linked from README |
-| Public GitHub/Google Doc/video submission | Not published/submitted automatically |
 
 ## 9. Boundaries, risks and next iteration
 
@@ -117,7 +115,7 @@ Next priorities are independently authored held-out incidents, human-labeled fin
 
 ## 10. Week 3 handout alignment
 
-The project demonstrates agent decisions, multiple steps, read-only tools, persistent shared state, durable human approval and failure handling. Its local write is a concrete task outcome rather than a one-turn answer. Code, prompts, data, iterations and observations are documented. The remaining submission actions are recording a video under five minutes, preparing the shared Google Doc and publishing the intended code assets after review.
+The project demonstrates agent decisions, multiple steps, read-only tools, persistent shared state, durable human approval and failure handling. Its local write is a concrete task outcome rather than a one-turn answer. Code, prompts, data, iterations and observations are documented.
 
 
 ## Current quality verification

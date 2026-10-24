@@ -77,15 +77,14 @@ Canonical documents, incidents, decisions, memory, traces, evaluation results an
 
 ## Documentation
 
-Start with these complete specifications and the presenter-ready demo script:
+The specifications cover the project scope, architecture and implementation:
 
 | Document | Word download | Editable source |
 |---|---|---|
 | Technical specification, including the architecture diagram | [Technical specification (.docx)](docs/Integration_Hub_Technical_Specification_Quality.docx) | [Markdown](docs/TECHNICAL_SPECIFICATION.md) |
 | Project specification: objectives, requirements, scope and acceptance | [Project specification (.docx)](docs/Integration_Hub_Project_Specification_Quality.docx) | [Markdown](docs/PROJECT_SPECIFICATION.md) |
-| Video demo: 4:45 narration, screen names, exact clicks and contingencies | [Video demonstration script (.docx)](docs/Integration_Hub_Video_Demo_Script.docx) | [Markdown](docs/VIDEO_DEMO_SCRIPT.md) |
 
-Architecture diagram: embedded and editable in the technical Word document, with a standalone [SVG](docs/diagrams/system_architecture.svg). The technical specification also includes editable Mermaid source. The video script clearly discloses its prepared investigation and demonstrates approval and guardrails live; it does not imply instant local inference or verified cloud operation.
+Architecture diagram: embedded and editable in the technical Word document, with a standalone [SVG](docs/diagrams/system_architecture.svg). The technical specification also includes editable Mermaid source.
 
 Detailed supporting references:
 
@@ -93,10 +92,10 @@ Detailed supporting references:
 - [Architecture](docs/ARCHITECTURE.md), [agent workflow](docs/AGENT_WORKFLOWS.md)
 - [Provider matrix](docs/PROVIDER_MATRIX.md), [security and limitations](docs/SECURITY.md)
 - [Deployment](docs/DEPLOYMENT.md), [migration](docs/MIGRATION_GUIDE.md)
-- [Evaluation evidence](docs/EVALUATION_REPORT.md), [Week 3 submission notes](docs/WEEK3_SUBMISSION.md)
+- [Evaluation evidence](docs/EVALUATION_REPORT.md), [Project notes and lessons](docs/WEEK3_SUBMISSION.md)
 - [Final verification record](docs/FINAL_VERIFICATION.md), [real durable-approval smoke evidence](evaluations/results/live-verification.json)
 
-Docker Compose configuration is included and validated syntactically. Container execution was not tested because Docker Desktop's engine was not running. The CI workflow is ready to use when this directory is published as its own repository. No remote repository or deployment has been changed.
+Docker Compose configuration is included and validated syntactically. Container execution was not tested because Docker Desktop's engine was not running. The repository includes a CI workflow. A public production deployment has not been verified.
 
 ## Project layout
 
@@ -108,7 +107,7 @@ integration-hub/
   evaluations/        Actual benchmark harness and saved JSON results
   tests/              Fixture, API, security, provider-contract and recovery tests
   scripts/            Startup, seed, rebuild, backup, verification and doc generation
-  docs/               Specifications, Word files, architecture, demo script and evidence
+  docs/               Specifications, Word files, architecture and evaluation evidence
   docker/             Container build files and reverse proxy configuration
   runtime/            Generated databases, indexes and logs; ignored by Git
   .env.example        Configuration reference, without credentials
