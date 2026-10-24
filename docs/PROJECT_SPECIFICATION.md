@@ -120,6 +120,8 @@ The project demonstrates agent decisions, multiple steps, read-only tools, persi
 
 ## Current quality verification
 
-15/18 task checks passed (83.33%). Simulated approval completion: 12/12 eligible cases (100.0%).
+18/18 task checks passed (100.0%). Simulated approval completion: 12/12 eligible cases (100.0%).
 
-The current suite has 63 passing tests. Frontend build, lint and formatting checks passed. All eleven views passed browser navigation checks. The benchmark uses six baseline cases and twelve newly authored holdout cases, isolated storage and simulated approvals. Model-correction feedback survives backend restarts. The dashboard reads the same saved results. Earlier figures in this document are historical baseline measurements. See QUALITY_VERIFICATION.md for the complete evidence and limitations.
+The current suite has 73 passing tests. Separate planner boundary checks passed 10/10; they measure tool selection only and are excluded from the workflow benchmark score. The six baseline and twelve original holdout cases now serve as development regressions after feedback-driven changes. They are not independent unseen validation. Evaluation storage and simulated approvals stay isolated. API and frontend-proxy dashboard responses match the complete saved result.
+
+The planner requests missing evidence before retrieval, preserves searches for unfamiliar concrete failures and allows explicit requests for historical incidents. Model-correction feedback and approval state survive restarts. Earlier figures in this document are historical measurements. See QUALITY_VERIFICATION.md for complete evidence and limitations.

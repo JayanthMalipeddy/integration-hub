@@ -1,0 +1,62 @@
+[
+  {
+    "id": "vague-report",
+    "title": "Integration problem",
+    "logs": "The user says the integration is not working, but no failure details or logs are available.",
+    "expected_tool": "request_human"
+  },
+  {
+    "id": "successful-ping",
+    "title": "Unlinked complaint",
+    "logs": "GET /ping status=200 result=healthy. There is no evidence connecting this successful response to a failure.",
+    "expected_tool": "request_human"
+  },
+  {
+    "id": "unknown-adapter-code",
+    "title": "Adapter rejects payload",
+    "logs": "worker error=ZXQ912 payload rejected by custom adapter during invoice import",
+    "expected_tool": "search_runbooks"
+  },
+  {
+    "id": "socket-reset",
+    "title": "Upload interrupted",
+    "logs": "socket error=ECONNRESET peer closed connection during upload",
+    "expected_tool": "search_runbooks"
+  },
+  {
+    "id": "application-error-on-200",
+    "title": "Order creation failed",
+    "logs": "response status=200 body={\"success\":false,\"error\":\"order validation failed\"}",
+    "expected_tool": "search_runbooks"
+  },
+  {
+    "id": "latency-without-error-code",
+    "title": "Slow response",
+    "logs": "response duration_ms=18000 exceeds expected maximum=1000ms",
+    "expected_tool": "search_runbooks"
+  },
+  {
+    "id": "failure-with-missing-trace",
+    "title": "Transport failure",
+    "logs": "ConnectionResetError: connection closed; no request trace was captured",
+    "expected_tool": "search_runbooks"
+  },
+  {
+    "id": "history-without-current-error",
+    "title": "Find previous incidents involving the billing adapter",
+    "logs": "No current logs are available. Look up similar historical incidents.",
+    "expected_tool": "search_memory"
+  },
+  {
+    "id": "history-with-blank-logs",
+    "title": "Find prior billing adapter incidents",
+    "logs": "   ",
+    "expected_tool": "search_memory"
+  },
+  {
+    "id": "blank-logs",
+    "title": "Unexplained issue",
+    "logs": "   ",
+    "expected_tool": "request_human"
+  }
+]

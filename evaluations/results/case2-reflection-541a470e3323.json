@@ -1,0 +1,189 @@
+{
+  "id": "case2-reflection-541a470e3323",
+  "timestamp": "2026-10-24T16:46:17.170382+00:00",
+  "test_kind": "live repair replay of historical missing citation; not an end-to-end benchmark",
+  "historical_input": "eval-250629587ee5.json",
+  "workflow_sha256": "4ee47a87017a88855402d96e0092ce9274139cbc9eefe6d43d93915939487704",
+  "passed": true,
+  "status": "awaiting_approval",
+  "validation_sequence": [
+    false,
+    true
+  ],
+  "seeded_analysis_attempts": 1,
+  "new_model_calls": 1,
+  "analysis_attempts": 2,
+  "latency_ms": 115818.89,
+  "initial_finding": {
+    "category": "rate_limit",
+    "hypothesis": "The root cause of the incident is a rate limit exceeded by the order-api service, as evidenced by the HTTP 429 status codes and the Retry-After headers in the logs.",
+    "confidence": "high",
+    "citations": [
+      {
+        "source_id": "incident:logs",
+        "quote": "2026-10-24T08:10:00Z connector service=order-api correlation_id=req-rate-11 status=429 message=Too many requests Retry-After=30"
+      },
+      {
+        "source_id": "incident:logs",
+        "quote": "2026-10-24T08:10:01Z connector service=order-api correlation_id=req-rate-12 status=429 message=rate limit exceeded"
+      }
+    ],
+    "checks": [
+      "Verify the current client quota and agreed limits with the upstream service.",
+      "Implement bounded exponential backoff with jitter as recommended in the rate limit runbook.",
+      "Monitor and respect the Retry-After header to avoid overwhelming the upstream service."
+    ],
+    "recovery": [
+      "Reduce the concurrency of requests from the order-api service until the rate limit is no longer exceeded.",
+      "Verify idempotency keys and downstream transaction status before proposing any replay of non-idempotent payments or orders."
+    ],
+    "uncertainty": "The exact cause of the rate limit is not clear without additional information from the upstream service, such as their current quota and limits."
+  },
+  "final_finding": {
+    "category": "rate_limit",
+    "hypothesis": "The root cause of the incident is a rate limit exceeded by the order-api service, as evidenced by the HTTP 429 status codes and the Retry-After headers in the logs.",
+    "confidence": "high",
+    "citations": [
+      {
+        "source_id": "incident:logs",
+        "quote": "2026-10-24T08:10:00Z connector service=order-api correlation_id=req-rate-11 status=429 message=Too many requests Retry-After=30"
+      },
+      {
+        "source_id": "rb-rate:0",
+        "quote": "Rate limit runbook. HTTP 429 means that the upstream service is rate limiting requests. Inspect Retry-After and the agreed client quota. Respect Retry-After before retrying. Use bounded exponential backoff with jitter and reduce concurrency after operator approval. Do not blindly replay non-idempotent payments or orders. Verify idempotency keys and downstream transaction status before proposing replay. A successful retry does not prove the quota issue has been permanently resolved."
+      }
+    ],
+    "checks": [
+      "Verify the current client quota and agreed limits with the upstream service.",
+      "Implement bounded exponential backoff with jitter as recommended in the rate limit runbook.",
+      "Monitor and respect the Retry-After header to avoid overwhelming the upstream service."
+    ],
+    "recovery": [
+      "Reduce the concurrency of requests from the order-api service until the rate limit is no longer exceeded.",
+      "Verify idempotency keys and downstream transaction status before proposing any replay of non-idempotent payments or orders."
+    ],
+    "uncertainty": "The exact cause of the rate limit is not clear without additional information from the upstream service, such as their current quota and limits."
+  },
+  "validation": {
+    "passed": true,
+    "citations": [
+      {
+        "source_id": "incident:logs",
+        "valid": true
+      },
+      {
+        "source_id": "rb-rate:0",
+        "valid": true
+      }
+    ],
+    "errors": [],
+    "category_supported": true,
+    "log_and_document_cited": true,
+    "scope": "Exact source/quote integrity and log-category consistency. Semantic entailment requires human review.",
+    "reason": "Evidence integrity passed; hypothesis still requires operator review",
+    "canonical_sources_valid": true
+  },
+  "calls": [
+    {
+      "provider": "ollama",
+      "model": "qwen2.5:latest",
+      "input_tokens": 1063,
+      "output_tokens": 395,
+      "cost_usd": 0.0,
+      "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+      "fallback": false,
+      "node": "analyze",
+      "latency_ms": 115786.14
+    }
+  ],
+  "traces": [
+    {
+      "id": "0d55531a3146410c91bed9db622914e4",
+      "run_id": "case2-reflection-541a470e3323",
+      "node": "verify",
+      "detail": "Evidence is insufficient or inconsistent; human investigation required",
+      "timestamp": "2026-10-24T16:44:21.359240+00:00",
+      "validation": {
+        "passed": false,
+        "citations": [
+          {
+            "source_id": "incident:logs",
+            "valid": true
+          },
+          {
+            "source_id": "incident:logs",
+            "valid": true
+          }
+        ],
+        "errors": [
+          "Add an exact quotation from a retrieved evidence source, using its supplied id."
+        ],
+        "category_supported": true,
+        "log_and_document_cited": false,
+        "scope": "Exact source/quote integrity and log-category consistency. Semantic entailment requires human review.",
+        "reason": "Evidence is insufficient or inconsistent; human investigation required",
+        "canonical_sources_valid": true
+      }
+    },
+    {
+      "id": "d64d0e2ea6a54254aafe968db5078114",
+      "run_id": "case2-reflection-541a470e3323",
+      "node": "analyze",
+      "detail": "Model request started",
+      "timestamp": "2026-10-24T16:44:21.362359+00:00",
+      "phase": "started",
+      "attempt": 2
+    },
+    {
+      "id": "49c48ad7f88946df9310bd3b8730bb71",
+      "run_id": "case2-reflection-541a470e3323",
+      "node": "analyze",
+      "detail": "Model response received",
+      "timestamp": "2026-10-24T16:46:17.148528+00:00",
+      "phase": "finished",
+      "provider": "ollama",
+      "model": "qwen2.5:latest",
+      "input_tokens": 1063,
+      "output_tokens": 395,
+      "cost_usd": 0.0,
+      "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+      "fallback": false,
+      "latency_ms": 115786.14
+    },
+    {
+      "id": "07d5fdc271c849e5b305ac7cd9e9ede4",
+      "run_id": "case2-reflection-541a470e3323",
+      "node": "verify",
+      "detail": "Evidence integrity passed; hypothesis still requires operator review",
+      "timestamp": "2026-10-24T16:46:17.152364+00:00",
+      "validation": {
+        "passed": true,
+        "citations": [
+          {
+            "source_id": "incident:logs",
+            "valid": true
+          },
+          {
+            "source_id": "rb-rate:0",
+            "valid": true
+          }
+        ],
+        "errors": [],
+        "category_supported": true,
+        "log_and_document_cited": true,
+        "scope": "Exact source/quote integrity and log-category consistency. Semantic entailment requires human review.",
+        "reason": "Evidence integrity passed; hypothesis still requires operator review",
+        "canonical_sources_valid": true
+      }
+    },
+    {
+      "id": "d776fca88aa7407b810179ba57008789",
+      "run_id": "case2-reflection-541a470e3323",
+      "node": "prepare",
+      "detail": "Recovery ticket drafted; waiting for explicit operator approval",
+      "timestamp": "2026-10-24T16:46:17.156468+00:00"
+    }
+  ],
+  "no_ticket_or_memory_write": true,
+  "error": null
+}

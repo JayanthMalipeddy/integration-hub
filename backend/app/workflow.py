@@ -140,10 +140,34 @@ class InvestigationWorkflow:
         return {"signals": signals, "status": "running"}
 
     def plan(self, s):
-        decision, calls = self.call(s, "plan",
-            "Select ONE read-only tool. search_runbooks for operational errors; search_memory for explicitly requested prior incidents; request_human when logs lack useful information. Write a short focused retrieval query including error codes. Return the required JSON only.",
-            {"incident": s["incident"]["title"], "signals": s["signals"], "logs": s["incident"]["logs"][:1500]}, Decision)
-        self.event(s, "tool_selection", decision["reason"], tool=decision["tool"], query=decision["query"])
+        # Blank telemetry is the only deterministic shortcut. Unknown error categories
+        # still reach the planner; a title may explicitly request historical incidents.
+        if not s["incident"]["logs"].strip() and not re.search(
+                r"\b(?:previous|prior|past|historical|history|earlier|similar)\b",
+                s["incident"]["title"], re.I):
+            decision = {"tool": "request_human", "query": "",
+                        "reason": "No log evidence supplied; provide an error message, trace or observed failure."}
+            calls = s.get("calls", [])
+            source = "blank_logs_guard"
+        else:
+            decision, calls = self.call(s, "plan",
+                "Select ONE read-only tool based on the supplied evidence and the user's request. "
+                "Use search_memory ONLY for an explicit request to find previous or similar incidents; "
+                "mentioning that something happened yesterday is not such a request. "
+                "Use request_human when the input contains only a vague complaint, explicitly unavailable "
+                "failure telemetry, or a successful health check with no linked failure. A title describing "
+                "an issue is not itself failure evidence. Do not search for generic troubleshooting in these cases. "
+                "Use search_runbooks when logs describe a concrete failure or actionable abnormal observation. "
+                "An empty signals.categories list or absent HTTP error code does NOT rule out a failure: "
+                "connection resets, exceptions, application-level errors in HTTP 200 responses and abnormal "
+                "latency can justify retrieval. Missing additional telemetry does not negate an observed failure. "
+                "Only when selecting a search tool, write a short focused query using details actually present; "
+                "include an error code only if supplied. For request_human set query to an empty string and "
+                "explain what evidence is needed. Return the required JSON only.",
+                {"incident": s["incident"]["title"], "signals": s["signals"], "logs": s["incident"]["logs"][:1500]}, Decision)
+            source = "model"
+        self.event(s, "tool_selection", decision["reason"], tool=decision["tool"], query=decision["query"],
+                   decision_source=source)
         return {"decision": decision, "calls": calls}
 
     def tools(self, s):
@@ -217,7 +241,11 @@ class InvestigationWorkflow:
         return {"status": "completed", "ticket_id": ticket["id"]}
 
     def handoff(self, s):
-        reason = "Untrusted instructions detected" if s.get("signals", {}).get("injection_risk") else s.get("validation", {}).get("reason", "Insufficient evidence; operator investigation required")
+        reason = s.get("validation", {}).get("reason") or "Insufficient evidence; operator investigation required"
+        if s.get("decision", {}).get("tool") == "request_human":
+            reason = s["decision"]["reason"] or reason
+        if s.get("signals", {}).get("injection_risk"):
+            reason = "Untrusted instructions detected"
         if s.get("unsafe_evidence"):
             reason = "Retrieved evidence contains instruction patterns; operator review required"
         self.event(s, "handoff", reason)

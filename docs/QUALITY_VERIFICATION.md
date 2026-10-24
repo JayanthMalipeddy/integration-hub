@@ -1,68 +1,71 @@
 # Integration Hub quality verification
 
-Measured run: eval-5d6d1cdb82ba at 2026-10-24T14:06:16.031095+00:00
+Measured run: eval-8881397d2059 at 2026-10-24T17:31:48.051201+00:00.
 
-15/18 task checks passed (83.33%). Simulated approval completion: 12/12 eligible cases (100.0%).
+18/18 task checks passed (100.0%). Simulated approval completion: 12/12 eligible cases (100.0%).
 
 ## Implemented changes
 
-- Eleven readable frontend pages, shared components, API client and state hook; Prettier formatting enforced in CI.
-- Up to two analyst corrections with persisted validation feedback, bounded graph execution and unchanged human approval requirements.
-- Nomic document/query task prefixes, sentence-aware chunks and versioned collection identities.
-- Broader secret redaction and normalized injection screening, including checks on retrieved evidence. These are best-effort checks, not a complete injection defense.
-- Project-owned Chroma service at http://127.0.0.1:8082; data in runtime/chroma-server.
-- Active model stage, elapsed time and analysis attempt visibility; benchmark history and configuration details in the dashboard.
-- Eighteen synthetic cases with baseline/holdout breakdowns, explicit expected-document citation checks and isolated simulated approval completion.
+- Evidence-aware planning: vague complaints and successful health checks without linked failures request human investigation. Search queries are only required for retrieval.
+- Blank logs can skip the model; titles suggesting previous incidents still reach the planner. Unknown error categories do not automatically block retrieval.
+- Human-handoff messages explain the missing evidence. Existing source validation, bounded analyst correction and approval requirements remain in force.
+- Eleven frontend pages with shared controls, an API client and a state hook.
+- Nomic task prefixes, sentence-aware chunks and a project-owned Chroma service on port 8082.
+- Persistent SQLite checkpoints, canonical source checks, best-effort redaction and injection screening.
+- Actual planner decisions are saved with benchmark rows for inspection in the dashboard.
 
 ## Verification
 
-- 63 Python tests passed, including correction exhaustion, malformed responses, canonical-source rejection, model outage/restart, credential redaction and approval safety.
-- Frontend production build, lint and formatting checks passed.
-- Browser check: all 11 views rendered; sample form and theme controls passed; no JavaScript exceptions.
-- Real local Chroma retrieval returned the expected authentication runbook.
-- Dashboard API metrics exactly match the completed JSON benchmark artifact.
-- Interactive workspace at final check: 8 runs and 2 tickets; benchmark tickets and memory remain in isolated evaluation storage.
+- 73 Python tests passed, including nine planner routing regressions and the existing correction, approval, security and provider tests.
+- Separate planner boundary checks: 10/10 passed, using nine real local-model calls and one deterministic blank-log shortcut. These checks measure tool choice, not retrieval quality or complete investigations.
+- The active backend was restarted with the updated planner. API and frontend-proxy dashboard responses exactly match the complete latest benchmark artifact.
+- Current workflow and evaluation code hashes match the measured artifacts; the 18-case dataset is unchanged from the previous benchmark.
+- Earlier frontend build, lint, formatting and eleven-view browser checks remain historical verification. This update changes no frontend source.
+- Evaluation checkpoints, tickets and memory stay in isolated storage. The dashboard receives the completed report only.
 
 ## Measured outcomes
 
 | Group | Passed | Total | Percent |
 |---|---:|---:|---:|
-| All task checks | 15 | 18 | 83.33% |
-| Baseline task checks | 5 | 6 | 83.33% |
-| Holdout task checks | 10 | 12 | 83.33% |
+| All task checks | 18 | 18 | 100.0% |
+| Baseline task checks | 6 | 6 | 100.0% |
+| Original holdout split (now regression cases) | 12 | 12 | 100.0% |
 | Simulated completion | 12 | 12 | 100.0% |
 
-Failed cases: missing-evidence, holdout-no-logs, holdout-healthy.
+Failed task checks: none in this run.
+
+## Planner comparison
+
+The previous run scored 15/18 (83.33%). Its three planner failures eventually reached a safe handoff, after unnecessary retrieval and analysis. The table compares those same inputs with the new run.
+
+| Case | Previous time (s) | New time (s) | New tool | Analyst calls | Task check |
+|---|---:|---:|---|---:|---|
+| missing-evidence | 110.15 | 17.32 | request_human | 0 | Passed |
+| holdout-no-logs | 323.40 | 14.82 | request_human | 0 | Passed |
+| holdout-healthy | 200.47 | 16.51 | request_human | 0 | Passed |
+
+These are individual observed timings, not repeated controlled performance trials. Nonblank inputs still require a model decision. The blank-input shortcut does not imply millisecond latency for all insufficient-evidence cases.
+
+## Retrieval measurements
 
 | Retrieval | Mean latency (ms) | Correct top-1 | Measurements |
 |---|---:|---:|---:|
-| lexical | 0.356 | 36 | 36 |
-| vector | 204.139 | 36 | 36 |
+| lexical | 0.334 | 36 | 36 |
+| vector | 175.946 | 36 | 36 |
 
 Vector timing includes embedding and HTTP latency. The four-runbook workload does not establish a general retrieval-speed ranking.
 
 ## Evidence and limits
 
-- Raw result: ../evaluations/results/eval-5d6d1cdb82ba.json
-- The interrupted run eval-79ccb92dae64 is retained under runtime/evaluations with its outage note and partial results. It did not publish an aggregate score.
-- The older 5/6 (83.33%) benchmark remains historical evidence. The new task rubric also requires the expected tool and a citation to the expected document, so scores are not a controlled before/after comparison.
-- Holdout cases are newly authored synthetic scenarios, frozen before evaluation; they are not independent production incidents. One model run per case does not establish reliability across repeated runs.
-- Exact quotation checks do not prove semantic support. Completion uses a simulated operator; actual incident resolution and human-rated usefulness are not measured.
+- [Latest workflow result](../evaluations/results/eval-8881397d2059.json).
+- [Planner boundary checks](../evaluations/results/planner-779ddf407eb6.json).
+- [Previous 18-case result](../evaluations/results/eval-5d6d1cdb82ba.json) and the original six-case result remain unchanged.
+- The baseline/holdout labels are preserved for historical comparison. The twelve original holdout cases have now informed changes and are development regression cases, not independent unseen validation. New independent cases and repeated runs are still needed.
+- All data is synthetic. One local run per case does not establish production accuracy or reliability. Planner boundary cases were authored for this change and do not contribute to the 18-case score.
+- Unknown failures may be investigated by retrieval, but the existing four-category evidence validator can still require human review. Tool selection alone does not establish diagnostic correctness.
+- Exact quotes do not prove semantic support. Completion uses simulated approval; real incident resolution and human-rated usefulness are not measured.
+- Approved hypotheses accumulate within each isolated benchmark run. Cases run sequentially rather than resetting memory between cases.
 - Cloud services remain disabled and live-unverified. The application remains single-user with one investigation admitted per backend process.
+- An initial benchmark attempt, eval-1259f67587a6, was stopped during development review before the final handoff wording. Its local partial evidence is retained and no aggregate score was published.
 
-No academy grade is claimed. The original evaluation report remains the review of the earlier implementation.
-
-
-## Remaining planner limitation
-
-All three failed task checks ultimately reached the expected safe human handoff. They failed because the planner chose a retrieval tool instead of the expected request_human decision. This is a tool-selection and unnecessary-work limitation, not an unauthorized ticket write. The bounded correction limit was exercised on unsupported findings.
-
-| Case | Actual tool | Expected tool | Final state | Analysis attempts |
-|---|---|---|---|---:|
-| missing-evidence | search_runbooks | request_human | needs_human | 1 |
-| holdout-no-logs | search_memory | request_human | needs_human | 3 |
-| holdout-healthy | search_runbooks | request_human | needs_human | 2 |
-
-Additional browser checks passed for benchmark-history selection and rendering a malformed response as a human handoff. These checks used a browser-only fixture and did not alter backend records.
-
-Approved hypotheses accumulate inside the isolated benchmark run. Cases are executed sequentially rather than with an empty memory reset for every case; these are stateful workflow measurements.
+No academy grade or general accuracy score is claimed.

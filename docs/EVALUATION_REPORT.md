@@ -1,5 +1,7 @@
 # Executed evaluation report
 
+> Historical verification record. For current results, see [quality verification](QUALITY_VERIFICATION.md).
+
 Run: `eval-250629587ee5` at **2026-10-24 10:52:57 UTC**. Profile: `local_free`. Actual model: `qwen2.5:latest` through local Ollama. Embeddings: `nomic-embed-text:latest`. Dataset SHA-256: `679e2f9f3d8e454625cd3c02574feb7d967250e32df18360f4d64dc306a37eb7`.
 
 [Raw results and case-level outputs](../evaluations/results/eval-250629587ee5.json) (from this document use the repository `evaluations/results` directory).

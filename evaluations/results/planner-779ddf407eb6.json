@@ -1,0 +1,240 @@
+{
+  "id": "planner-779ddf407eb6",
+  "timestamp": "2026-10-24T17:05:47.263021+00:00",
+  "model": "qwen2.5:latest",
+  "dataset_sha256": "fe844f012a26065628278dceccc7c51a15b7d20ee9defa573332e27707ce8b52",
+  "workflow_sha256": "aa286527b7ef7e9f30c6dea1631fb9c215f50afa5b8df9334d52d09ce45c319c",
+  "passed": 10,
+  "total": 10,
+  "results": [
+    {
+      "case": "vague-report",
+      "expected_tool": "request_human",
+      "decision": {
+        "tool": "request_human",
+        "query": "",
+        "reason": "Additional telemetry and failure details are needed to diagnose the issue."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 342,
+          "output_tokens": 33,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 9443.59
+        }
+      ],
+      "passed": true,
+      "latency_ms": 9450.88
+    },
+    {
+      "case": "successful-ping",
+      "expected_tool": "request_human",
+      "decision": {
+        "tool": "request_human",
+        "query": "",
+        "reason": "The logs show a successful health check with no linked failure telemetry. More context or specific failure evidence is needed."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 349,
+          "output_tokens": 43,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 14446.18
+        }
+      ],
+      "passed": true,
+      "latency_ms": 14456.86
+    },
+    {
+      "case": "unknown-adapter-code",
+      "expected_tool": "search_runbooks",
+      "decision": {
+        "tool": "search_runbooks",
+        "query": "adapter rejects payload during invoice import error=ZXQ912 custom adapter invoice import failure investigation steps",
+        "reason": "The logs indicate a specific error related to payload rejection by a custom adapter during invoice import. A runbook search is appropriate to find relevant investigation steps."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 341,
+          "output_tokens": 73,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 19090.14
+        }
+      ],
+      "passed": true,
+      "latency_ms": 19101.14
+    },
+    {
+      "case": "socket-reset",
+      "expected_tool": "search_runbooks",
+      "decision": {
+        "tool": "search_runbooks",
+        "query": "ECONNRESET peer closed connection during upload incident investigation runbook",
+        "reason": "The logs indicate a connection reset error during an upload, which is a concrete failure requiring a runbook for further investigation."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 334,
+          "output_tokens": 59,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 17682.73
+        }
+      ],
+      "passed": true,
+      "latency_ms": 17693.47
+    },
+    {
+      "case": "application-error-on-200",
+      "expected_tool": "search_runbooks",
+      "decision": {
+        "tool": "search_runbooks",
+        "query": "order validation failed 200 response status order creation failure",
+        "reason": "The logs indicate a 200 response status with an error message 'order validation failed', suggesting a failure in the order creation process."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 345,
+          "output_tokens": 63,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 17966.73
+        }
+      ],
+      "passed": true,
+      "latency_ms": 17976.96
+    },
+    {
+      "case": "latency-without-error-code",
+      "expected_tool": "search_runbooks",
+      "decision": {
+        "tool": "search_runbooks",
+        "query": "slow response duration_ms exceeds expected maximum with no HTTP error codes present",
+        "reason": "The logs indicate a response duration that exceeds the expected maximum, but there are no HTTP error codes or other specific failure telemetry."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 342,
+          "output_tokens": 61,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 16500.09
+        }
+      ],
+      "passed": true,
+      "latency_ms": 16518.42
+    },
+    {
+      "case": "failure-with-missing-trace",
+      "expected_tool": "search_runbooks",
+      "decision": {
+        "tool": "search_runbooks",
+        "query": "ConnectionResetError connection closed transport failure incident investigation runbook",
+        "reason": "The logs indicate a ConnectionResetError with a connection closed message, which suggests a transport layer issue. A runbook specific to this error will provide the necessary steps to investigate and resolve the issue."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 336,
+          "output_tokens": 73,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 19539.02
+        }
+      ],
+      "passed": true,
+      "latency_ms": 19563.08
+    },
+    {
+      "case": "history-without-current-error",
+      "expected_tool": "search_memory",
+      "decision": {
+        "tool": "search_memory",
+        "query": "previous incidents involving the billing adapter",
+        "reason": "Finding similar historical incidents related to the billing adapter."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 341,
+          "output_tokens": 38,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 13014.37
+        }
+      ],
+      "passed": true,
+      "latency_ms": 13039.45
+    },
+    {
+      "case": "history-with-blank-logs",
+      "expected_tool": "search_memory",
+      "decision": {
+        "tool": "search_memory",
+        "query": "billing adapter incidents yesterday or recent billing adapter issues",
+        "reason": "The user is looking for prior incidents related to the billing adapter. This requires searching for similar incidents in the past."
+      },
+      "calls": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5:latest",
+          "input_tokens": 328,
+          "output_tokens": 54,
+          "cost_usd": 0.0,
+          "cost_basis": "Local inference: no API charge; hardware/electricity excluded",
+          "fallback": false,
+          "node": "plan",
+          "latency_ms": 15209.28
+        }
+      ],
+      "passed": true,
+      "latency_ms": 15219.23
+    },
+    {
+      "case": "blank-logs",
+      "expected_tool": "request_human",
+      "decision": {
+        "tool": "request_human",
+        "query": "",
+        "reason": "No log evidence supplied; provide an error message, trace or observed failure."
+      },
+      "calls": [],
+      "passed": true,
+      "latency_ms": 3.13
+    }
+  ],
+  "scope": "Planner-only boundary checks authored for this change, one run each. No retrieval, analysis or approval executed. Separate from the 18-case workflow benchmark; not independent accuracy evidence."
+}

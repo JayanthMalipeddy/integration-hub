@@ -69,7 +69,7 @@ def evaluate():
                "citation_checks": result.get("validation", {}).get("citations", []),
                "latency_ms": round((time.perf_counter() - started) * 1000, 2), "calls": result.get("calls", []),
                "analysis_attempts": result.get("analysis_attempts", 0), "error": result.get("error"),
-               "finding": result.get("finding"), "completion_passed": None}
+               "finding": result.get("finding"), "decision": result.get("decision"), "completion_passed": None}
         # A test operator approves only successful proposals, in this isolated synthetic dataset.
         # This measures local completion mechanics, never human-rated RCA quality.
         if case["expected_document"]:
@@ -117,7 +117,7 @@ def evaluate():
               "approval_mode": "simulated operator in isolated synthetic evaluation storage",
               "not_measured": ["semantic claim entailment", "human-rated RCA usefulness", "production incident accuracy", "live paid-provider interoperability"],
               "other_profiles": {p: "not_run" for p in ("hybrid", "sponsored")},
-              "limitations": "18 synthetic cases (6 baseline, 12 newly authored holdout); one workflow run each. Holdout cases were frozen before this run, not externally curated. Four runbooks. Retrieval has three order-alternated repetitions per query; vector timing includes local embeddings and HTTP. Completion uses simulated approvals. Exact quotes do not prove semantic support. Hardware/electricity excluded."}
+              "limitations": "18 synthetic cases (6 baseline, 12 newly authored holdout); one workflow run each. The original holdout split is retained for historical comparison, but those cases are now known development regressions after feedback-driven planner changes; they are not independent unseen validation. Four runbooks. Retrieval has three order-alternated repetitions per query; vector timing includes local embeddings and HTTP. Completion uses simulated approvals. Exact quotes do not prove semantic support. Hardware/electricity excluded."}
     output = ROOT / "evaluations/results" / (evaluation_id + ".json")
     output.write_text(json.dumps(report, indent=2), encoding="utf-8")
     # Publish only the result summary. Evaluation tickets, memory and checkpoints stay isolated.

@@ -2,7 +2,7 @@
 
 A local workspace for investigating integration and API errors. Add a log excerpt, retrieve relevant runbooks, and review a proposed cause and recovery plan. The application checks source quotations and asks for approval before creating a local recovery ticket.
 
-**Local implementation is working.** Latest measured benchmark: **15/18 task checks passed (83.33%)**. Simulated approval completion: 12/12. These are synthetic local measurements, not production accuracy. See [quality verification](docs/QUALITY_VERIFICATION.md) and [raw results](evaluations/results/eval-5d6d1cdb82ba.json). The original six-case 83.33% benchmark is preserved as historical evidence.
+**Local implementation is working.** Latest measured benchmark: **18/18 task checks passed (100.0%)**. Simulated approval completion: 12/12. These are synthetic local measurements, not production accuracy. See [quality verification](docs/QUALITY_VERIFICATION.md) and [raw results](evaluations/results/eval-8881397d2059.json). The original six-case 83.33% benchmark is preserved as historical evidence.
 
 ## Run locally
 
@@ -117,7 +117,7 @@ integration-hub/
 
 ## Verification and common startup issues
 
-The revised code passes **64 Python tests**, frontend build, lint and formatting checks. Browser checks cover all eleven views, sample-form loading, theme switching, benchmark selection and malformed-response handoff. Current measured model outcomes and their limitations are recorded in [quality verification](docs/QUALITY_VERIFICATION.md); the original six-case 83.33% result remains historical evidence. Returned-quote integrity is not overall answer accuracy.
+The revised code passes **73 Python tests**, frontend build, lint and formatting checks. Browser checks cover all eleven views, sample-form loading, theme switching, benchmark selection and malformed-response handoff. Current measured model outcomes and their limitations are recorded in [quality verification](docs/QUALITY_VERIFICATION.md); the original six-case 83.33% result remains historical evidence. Returned-quote integrity is not overall answer accuracy.
 
 | Symptom | Check / action |
 |---|---|
@@ -166,7 +166,7 @@ The frontend separates eleven page components, shared controls, an API client an
 
 Retrieval uses Nomic task-specific inputs and sentence-aware chunks. The index version changes collection identity, preserving old collections and preventing mixed embedding conventions.
 
-Run `.\.venv\Scripts\python.exe -m evaluations.run` for six baseline cases plus twelve frozen synthetic holdout cases. The harness creates isolated evaluation storage and a dedicated Chroma collection, measures simulated approval completion separately, and publishes its summary to the same SQLite evaluation records used by the dashboard. Interactive tickets and memory remain separate. Results include configuration and dataset/code fingerprints. The original 83.33% result remains historical evidence.
+Run `.\.venv\Scripts\python.exe -m evaluations.run` for six baseline cases plus twelve cases from the original holdout split, now reused as development regressions. The harness creates isolated evaluation storage and a dedicated Chroma collection, measures simulated approval completion separately, and publishes its summary to the same SQLite evaluation records used by the dashboard. Interactive tickets and memory remain separate. Results include configuration and dataset/code fingerprints. The original 83.33% result remains historical evidence.
 
 See [quality verification](docs/QUALITY_VERIFICATION.md) for the measured results and limitations. The original academy report describes the earlier implementation.
 
@@ -177,4 +177,10 @@ The project-owned Chroma service stores data in `runtime/chroma-server` and list
 
 The existing verify-to-analyze loop was verified against the historical partner-quota answer that omitted a runbook citation. A targeted live replay seeded that saved answer immediately before verification; real local Ollama inference corrected it in one additional call. Validation changed from failed to passed, with incident:logs and rb-rate:0 quotations, then paused for human approval. No ticket or memory was written. This repair-stage verification is separate from the 18-case benchmark and does not change its score.
 
-Evidence: [live replay](evaluations/results/case2-reflection-420b0d78824f.json). Regression: tests/test_case2_reflection.py. Reproduce the live check with `.\.venv\Scripts\python.exe -m scripts.verify_case2_reflection`. The full test suite now passes 64 tests.
+Evidence: [live replay](evaluations/results/case2-reflection-420b0d78824f.json). Regression: tests/test_case2_reflection.py. Reproduce the live check with `.\.venv\Scripts\python.exe -m scripts.verify_case2_reflection`. The full test suite now passes 73 tests.
+
+## Planner evidence checks
+
+Vague complaints and successful health checks without a linked failure now ask for more evidence before retrieval. Concrete unfamiliar failures can still select a runbook search, and explicit requests for previous incidents can select memory search without a current error. Only blank logs without a title suggesting a history request take the deterministic shortcut.
+
+The separate planner checks passed 10/10; they are not included in the workflow benchmark score. Reproduce them with `.\.venv\Scripts\python.exe -m scripts.verify_planner`. See [quality verification](docs/QUALITY_VERIFICATION.md) for the before/after timings, full workflow results and limitations.

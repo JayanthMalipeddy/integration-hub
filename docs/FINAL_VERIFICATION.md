@@ -1,5 +1,7 @@
 # Final verification — 24 October 2026
 
+> Historical verification record. For current results, see [quality verification](QUALITY_VERIFICATION.md).
+
 | Check | Result |
 |---|---|
 | Python unit/API/provider/security/backup tests | 30 passed |
