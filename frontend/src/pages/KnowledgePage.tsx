@@ -1,6 +1,6 @@
 import type { PageState } from "../hooks/useHub";
 import { BookOpen, RefreshCw } from "lucide-react";
-import { Badge } from "../components/common";
+import { Badge, Empty } from "../components/common";
 import { api } from "../lib/api";
 export function KnowledgePage({
   config,
@@ -59,6 +59,17 @@ export function KnowledgePage({
                 <small>Source ID: {d.id}</small>
               </details>
             ))}
+          {!docs.some((d) =>
+            (d.title + d.text).toLowerCase().includes(filter.toLowerCase()),
+          ) && (
+            <Empty
+              text={
+                docs.length
+                  ? "No documents match your search."
+                  : "Add a runbook to ground your investigations in source evidence."
+              }
+            />
+          )}
           <button
             disabled={busy}
             onClick={() =>

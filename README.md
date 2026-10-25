@@ -1,8 +1,16 @@
 # Integration Hub — Week 3
 
-A local workspace for investigating integration and API errors. Add a log excerpt, retrieve relevant runbooks, and review a proposed cause and recovery plan. The application checks source quotations and asks for approval before creating a local recovery ticket.
+A local workspace for investigating integration and API errors. Add a log excerpt, retrieve relevant runbooks, and review observed evidence and source-backed next steps. The application checks source quotations and asks for approval before creating a local recovery ticket.
 
-**Local implementation is working.** Latest measured benchmark: **18/18 task checks passed (100.0%)**. Simulated approval completion: 12/12. These are synthetic local measurements, not production accuracy. See [quality verification](docs/QUALITY_VERIFICATION.md) and [raw results](evaluations/results/eval-8881397d2059.json). The original six-case 83.33% benchmark is preserved as historical evidence.
+**Current gap-repair verification:** see [verification](docs/GAP_REPAIR_VERIFICATION.md), [manual evidence flow](docs/MANUAL_EVIDENCE.md), and [development prompts/iterations](docs/DEVELOPMENT_ITERATIONS.md). Historical benchmark records remain available in [raw results](evaluations/results). Workflow regression scores are not production root-cause accuracy.
+
+## Interface and frontend verification
+
+The workspace includes grouped navigation, an operational review queue, searchable investigations, readable evidence, dark/light themes, mobile navigation and keyboard-accessible confirmation dialogs. API connection state and stale data are explicit; approval still creates only local records.
+
+Current test/build/browser results are recorded in the [gap-repair verification](docs/GAP_REPAIR_VERIFICATION.md). These checks do not establish multi-user production readiness. See [UI verification and rollback](docs/UI_DESIGN_VERIFICATION.md) for scope and remaining deployment work.
+
+![Operations overview](docs/screenshots/enterprise-dark-1440-overview.png)
 
 ## Run locally
 
@@ -31,6 +39,7 @@ Start backend and frontend in separate terminals:
 
 ```powershell
 $env:AI_PROFILE='local_free'
+.\.venv\Scripts\python.exe -m scripts.configure_access
 & .\scripts\start-chroma.ps1
 .\.venv\Scripts\python.exe -m scripts.serve
 ```
@@ -40,9 +49,9 @@ cd frontend
 npm run dev
 ```
 
-`./scripts/start.ps1` starts project-owned Chroma when configured, the API and frontend using this project's `.venv`, with logs in `runtime/logs`. Check that the ports are unused before starting another instance.
+`./scripts/start.ps1` starts shared Chroma when configured, the API and frontend using this project's `.venv`, with logs in `runtime/logs`. Check that the ports are unused before starting another instance.
 
-Open **http://127.0.0.1:5180**. API docs: **http://127.0.0.1:8010/docs**.
+Open **http://127.0.0.1:5180** and enter API_TOKEN from your private project-local `.env` file. The browser stores it only in memory for that tab. API documentation at **http://127.0.0.1:8010/docs** also requires the bearer header; use an authenticated client.
 
 The backend reads the project-local `.env` at startup; existing process environment variables take precedence. `.env.example` lists supported settings, and `.env` is ignored by Git. Docker Compose reads `.env` for interpolation. No cloud keys are needed for `local_free`.
 
@@ -117,7 +126,7 @@ integration-hub/
 
 ## Verification and common startup issues
 
-The revised code passes **73 Python tests**, frontend build, lint and formatting checks. Browser checks cover all eleven views, sample-form loading, theme switching, benchmark selection and malformed-response handoff. Current measured model outcomes and their limitations are recorded in [quality verification](docs/QUALITY_VERIFICATION.md); the original six-case 83.33% result remains historical evidence. Returned-quote integrity is not overall answer accuracy.
+Current regression counts and build checks are recorded in [gap-repair verification](docs/GAP_REPAIR_VERIFICATION.md). Browser checks cover all eleven views, sample-form loading, theme switching, benchmark selection and malformed-response handoff. Current measured model outcomes and their limitations are recorded in [quality verification](docs/QUALITY_VERIFICATION.md); the original six-case 83.33% result remains historical evidence. Returned-quote integrity is not overall answer accuracy.
 
 | Symptom | Check / action |
 |---|---|
@@ -137,7 +146,7 @@ The Markdown files are the editable sources for the Word specifications. With `p
 
 ## Existing local Chroma server
 
-This laptop is configured to use the project-owned Chroma server at `http://127.0.0.1:8082`:
+This laptop is configured to use the shared Chroma server at `http://127.0.0.1:8082`:
 
 ```env
 AI_PROFILE=local_free
@@ -149,7 +158,7 @@ CHROMA_PORT=8082
 
 The app uses its own `integration_hub_...` collection. Existing Week 2 collections are not reused or cleared. Canonical documents and checkpoints remain in this project's SQLite databases. Server mode calls Chroma through its HTTP API; it does not open the server's database files directly. Provider configuration shows the endpoint, collection and live heartbeat status.
 
-Keep the existing Chroma service running before investigating. If it is unavailable, the app reports that condition rather than silently switching databases. To use a standalone embedded database instead, set `CHROMA_MODE=embedded` and restart the backend. It will use `runtime/chroma` and rebuild the index from canonical documents when needed.
+Keep the existing Chroma service running before investigating. If it is unavailable, the app reports that condition rather than silently switching databases. Normal application runs use the shared HTTP service. Embedded mode is reserved for isolated tests; do not use it to create another project database.
 
 ## Switching to paid tools
 
@@ -170,17 +179,25 @@ Run `.\.venv\Scripts\python.exe -m evaluations.run` for six baseline cases plus 
 
 See [quality verification](docs/QUALITY_VERIFICATION.md) for the measured results and limitations. The original academy report describes the earlier implementation.
 
-The project-owned Chroma service stores data in `runtime/chroma-server` and listens on port 8082. Start it with `& .\scripts\start-chroma.ps1`; `scripts/start.ps1` also starts it. Port 8081 became unavailable during the interrupted benchmark; its data was not moved or modified.
+The shared Chroma service stores data in `C:\Projects\chroma db\server-data` on port 8082. The shared UI is at http://127.0.0.1:8090. Start both with `& .\scripts\start-chroma.ps1`; `scripts/start.ps1` also delegates to the shared launcher. Repeated startup reuses the same services. See [Shared Chroma](docs/SHARED_CHROMA.md) for migration and recovery details.
 
 
 ## Case 2 reflection verification
 
 The existing verify-to-analyze loop was verified against the historical partner-quota answer that omitted a runbook citation. A targeted live replay seeded that saved answer immediately before verification; real local Ollama inference corrected it in one additional call. Validation changed from failed to passed, with incident:logs and rb-rate:0 quotations, then paused for human approval. No ticket or memory was written. This repair-stage verification is separate from the 18-case benchmark and does not change its score.
 
-Evidence: [live replay](evaluations/results/case2-reflection-420b0d78824f.json). Regression: tests/test_case2_reflection.py. Reproduce the live check with `.\.venv\Scripts\python.exe -m scripts.verify_case2_reflection`. The full test suite now passes 73 tests.
+Evidence: [live replay](evaluations/results/case2-reflection-420b0d78824f.json). Regression: tests/test_case2_reflection.py. Reproduce the live check with `.\.venv\Scripts\python.exe -m scripts.verify_case2_reflection`. See the current verification record for the complete test count.
 
 ## Planner evidence checks
 
 Vague complaints and successful health checks without a linked failure now ask for more evidence before retrieval. Concrete unfamiliar failures can still select a runbook search, and explicit requests for previous incidents can select memory search without a current error. Only blank logs without a title suggesting a history request take the deterministic shortcut.
 
 The separate planner checks passed 10/10; they are not included in the workflow benchmark score. Reproduce them with `.\.venv\Scripts\python.exe -m scripts.verify_planner`. See [quality verification](docs/QUALITY_VERIFICATION.md) for the before/after timings, full workflow results and limitations.
+
+## Security and operations
+
+Authentication is required by default. The connection screen, privacy filtering, streamed-body limits and operational diagnostics are covered by the backend regression suite and live browser/API checks. Provider configuration shows process-local request metrics and operational alerts; authenticated dependency readiness is available at `/api/ready`.
+
+Read the [security verification](docs/SECURITY_VERIFICATION.md) or [Word report](docs/Integration_Hub_Security_Verification.docx) for the measured checks and remaining work. The application remains single-user; organizational identity, encryption/retention policy and distributed operation are not implemented. Docker configuration validates, but its engine was unavailable for container runtime verification.
+
+Reports & exports: **Download selected report** downloads a Word `.docx` document with the selected investigation, evidence, checks, recovery recommendations and provider provenance. The download uses the authenticated `/api/runs/{id}/report.docx` endpoint.

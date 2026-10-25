@@ -36,34 +36,71 @@ export function ProvidersPage({ config }: Pick<PageState, "config">) {
           ))}
         </div>
       </section>
+      {config.operations && (
+        <section>
+          <h2>Operational checks</h2>
+          <p>{config.operations.scope}</p>
+          <dl>
+            <dt>API requests</dt>
+            <dd>{config.operations.requests}</dd>
+            <dt>API request latency, p95</dt>
+            <dd>{config.operations.p95_request_ms ?? "Not measured"} ms</dd>
+            <dt>Failed investigations saved</dt>
+            <dd>{config.operations.failed_runs}</dd>
+            <dt>Active investigations</dt>
+            <dd>{config.operations.running_runs} / 1</dd>
+          </dl>
+          <p className="muted">{config.operations.note}</p>
+          {config.operations.alerts.length ? (
+            <ul>
+              {config.operations.alerts.map((alert: string) => (
+                <li key={alert}>{alert}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No operational alerts have been recorded.</p>
+          )}
+          <p>
+            Dependency readiness is available at the authenticated /api/ready
+            endpoint.
+          </p>
+        </section>
+      )}
       <section>
         <h2>Provider options</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>AI_PROFILE</th>
-              <th>Model</th>
-              <th>Setup</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>local_free</td>
-              <td>Ollama</td>
-              <td>No paid API calls</td>
-            </tr>
-            <tr>
-              <td>hybrid</td>
-              <td>OpenRouter :free</td>
-              <td>API key and cloud data consent</td>
-            </tr>
-            <tr>
-              <td>sponsored</td>
-              <td>Nebius</td>
-              <td>API key, paid/data consent and a configured budget</td>
-            </tr>
-          </tbody>
-        </table>
+        <div
+          className="table-wrap"
+          tabIndex={0}
+          role="region"
+          aria-label="Provider options comparison"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>AI_PROFILE</th>
+                <th>Model</th>
+                <th>Setup</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>local_free</td>
+                <td>Ollama</td>
+                <td>No paid API calls</td>
+              </tr>
+              <tr>
+                <td>hybrid</td>
+                <td>OpenRouter :free</td>
+                <td>API key and cloud data consent</td>
+              </tr>
+              <tr>
+                <td>sponsored</td>
+                <td>Nebius</td>
+                <td>API key, paid/data consent and a configured budget</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p>
           Set VECTOR_STORE=chroma to keep your local Chroma server with any
           profile. Use VECTOR_STORE=auto for the profile default, or pinecone

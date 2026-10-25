@@ -1,6 +1,63 @@
 [
-  {"id":"rb-auth","title":"API Gateway: expired access token","kind":"runbook","text":"Authentication runbook. HTTP 401 with invalid_token or token expired indicates that the gateway rejected the supplied access token. Check the token expiry time, issuer, audience and gateway clock before concluding a cause. An expired access token must be replaced through the approved identity-provider flow. Never paste tokens into a ticket. Check a read-only health endpoint after refreshing credentials. Do not disable authentication or bypass gateway policy. Escalate to the identity team when valid tokens are still rejected."},
-  {"id":"rb-rate","title":"Partner API: rate limiting and backoff","kind":"runbook","text":"Rate limit runbook. HTTP 429 means that the upstream service is rate limiting requests. Inspect Retry-After and the agreed client quota. Respect Retry-After before retrying. Use bounded exponential backoff with jitter and reduce concurrency after operator approval. Do not blindly replay non-idempotent payments or orders. Verify idempotency keys and downstream transaction status before proposing replay. A successful retry does not prove the quota issue has been permanently resolved."},
-  {"id":"rb-timeout","title":"Downstream timeout investigation","kind":"runbook","text":"Timeout runbook. HTTP 504 indicates a gateway timeout while waiting for an upstream response. A read timeout is a symptom, not proof that the downstream service is offline. Correlate gateway and upstream timestamps using the correlation ID. Check downstream latency, connection establishment, DNS and queue depth. Do not simply increase timeouts without investigating saturation. Any timeout or concurrency configuration change needs operator approval. Escalate when upstream telemetry is unavailable."},
-  {"id":"rb-pool","title":"JDBC connection pool exhaustion","kind":"runbook","text":"Connection pool runbook. Connection pool exhausted or SQLTransientConnectionException indicates that a database connection could not be acquired within the configured time. Inspect active connections, maximum pool size, slow queries and unclosed connections. Pool exhaustion can be caused by slow queries, leaks or traffic growth; the log alone does not prove which. Capture pool metrics and query latency before proposing a change. Restarting a service or increasing the pool size requires operator approval and a database capacity check."}
+  {
+    "id": "rb-auth",
+    "title": "API Gateway: expired access token",
+    "kind": "runbook",
+    "text": "Authentication runbook. HTTP 401 with invalid_token or token expired indicates that the gateway rejected the supplied access token. Check the token expiry time, issuer, audience and gateway clock before concluding a cause. An expired access token must be replaced through the approved identity-provider flow. Never paste tokens into a ticket. Check a read-only health endpoint after refreshing credentials. Do not disable authentication or bypass gateway policy. Escalate to the identity team when valid tokens are still rejected.",
+    "categories": [
+      "authentication"
+    ]
+  },
+  {
+    "id": "rb-rate",
+    "title": "Partner API: rate limiting and backoff",
+    "kind": "runbook",
+    "text": "Rate limit runbook. HTTP 429 means that the upstream service is rate limiting requests. Inspect Retry-After and the agreed client quota. Respect Retry-After before retrying. Use bounded exponential backoff with jitter and reduce concurrency after operator approval. Do not blindly replay non-idempotent payments or orders. Verify idempotency keys and downstream transaction status before proposing replay. A successful retry does not prove the quota issue has been permanently resolved.",
+    "categories": [
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "rb-timeout",
+    "title": "Downstream timeout investigation",
+    "kind": "runbook",
+    "text": "Timeout runbook. HTTP 504 indicates a gateway timeout while waiting for an upstream response. A read timeout is a symptom, not proof that the downstream service is offline. Correlate gateway and upstream timestamps using the correlation ID. Check downstream latency, connection establishment, DNS and queue depth. Do not simply increase timeouts without investigating saturation. Any timeout or concurrency configuration change needs operator approval. Escalate when upstream telemetry is unavailable.",
+    "categories": [
+      "timeout"
+    ]
+  },
+  {
+    "id": "rb-pool",
+    "title": "JDBC connection pool exhaustion",
+    "kind": "runbook",
+    "text": "Connection pool runbook. Connection pool exhausted or SQLTransientConnectionException indicates that a database connection could not be acquired within the configured time. Inspect active connections, maximum pool size, slow queries and unclosed connections. Pool exhaustion can be caused by slow queries, leaks or traffic growth; the log alone does not prove which. Capture pool metrics and query latency before proposing a change. Restarting a service or increasing the pool size requires operator approval and a database capacity check.",
+    "categories": [
+      "connection_pool"
+    ]
+  },
+  {
+    "id": "rb-storage",
+    "title": "Oracle segment allocation failures",
+    "kind": "runbook",
+    "reference_urls": [
+      "https://docs.oracle.com/en/error-help/db/ora-01653/",
+      "https://docs.oracle.com/en/database/oracle/oracle-database/21/errmg/ORA-01500.html"
+    ],
+    "text": "Oracle storage allocation investigation. ORA-01653, ORA-01654 or ORA-01691 reports inability to allocate space for a table, index or LOB segment. This observation does not prove JDBC connection pool exhaustion. Ask the DBA for the affected segment and tablespace capacity at the incident time. Check free space, datafile limits and autoextension with the DBA before choosing a remedy. Correlate database allocation errors with failed adapter calls and audit writes. Do not restart the integration server or enlarge connection pools as a remedy for an unverified storage condition. Escalate storage changes to the DBA under the normal change process.",
+    "categories": [
+      "database_storage"
+    ]
+  },
+  {
+    "id": "rb-auth-load",
+    "title": "webMethods authentication work and CPU investigation",
+    "kind": "runbook",
+    "reference_urls": [
+      "https://www.ibm.com/docs/en/webmethods-integration/wm-integration-server/11.1.0?topic=clients-basic-authentication"
+    ],
+    "text": "Authentication workload investigation. Integration Server uses PBKDF2 password hashing for Basic Authentication. PBKDF2 stacks, password verification work and CPU saturation are observations; they do not alone prove why request volume grew or why JDBC acquisition failed. Capture timestamped CPU readings, multiple thread-dump summaries and request concurrency for the same node. Correlate authentication work with request rates, queueing and connection acquisition wait times. Check whether repeated requests are retries before proposing traffic changes. Do not disable authentication or reduce password hashing protections. Escalate any capacity or traffic-control change for operator approval after checking downstream impact.",
+    "categories": [
+      "authentication_load"
+    ]
+  }
 ]

@@ -1,0 +1,201 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Integration Hub — Architecture</title><style>html,body{margin:0;background:#080e1b}svg{display:block;width:100%;height:auto}</style><svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1600" viewBox="0 0 2400 1600" role="img" aria-labelledby="title desc">
+<title id="title">Integration Hub — animated system architecture</title><desc id="desc">React and FastAPI lead to LangGraph investigation, retrieval, verification, bounded reflection, human approval and local ticket creation. Services: Chroma, Ollama Qwen2.5, nomic embeddings, SQLite, reviewed memory and traces. Cloud integrations are optional and disabled. Native deployment is local; Docker runtime remains unverified.</desc>
+<defs>
+    <radialGradient id="ambient"><stop stop-color="#123c49" stop-opacity=".6"/><stop offset="1" stop-color="#080e1b" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ambient2"><stop stop-color="#2a2259" stop-opacity=".45"/><stop offset="1" stop-color="#080e1b" stop-opacity="0"/></radialGradient>
+    <linearGradient id="card" x2=".6" y2="1"><stop stop-color="#121e31"/><stop offset="1" stop-color="#0d1728"/></linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#6c8caa" opacity=".12"/></pattern>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#47e4c2" stroke-width="1.3"/></marker>
+    <marker id="amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#ffc879" stroke-width="1.3"/></marker>
+    <style>text{font-family:'Segoe UI',Arial,sans-serif}.mono{font-family:Consolas,monospace}</style></defs>
+<rect width="2400" height="1600" fill="#080e1b"/><ellipse cx="2070" cy="100" rx="1000" ry="750" fill="url(#ambient)"/><ellipse cx="760" cy="1030" rx="1100" ry="850" fill="url(#ambient2)"/><rect width="2400" height="1600" fill="url(#grid)"/>
+<text x="82" y="83" font-size="19" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="3">SYSTEM ARCHITECTURE  /  LOCAL-FIRST AI</text>
+<text x="78" y="172" font-size="86" fill="#edf5ff" font-weight="650" text-anchor="start" letter-spacing="-2">Integration Hub</text>
+<text x="82" y="222" font-size="31" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">From incident logs to an evidence-backed recovery plan.</text>
+<rect x="1805" y="103" width="515" height="52" rx="13" fill="#47e4c2" fill-opacity=".07" stroke="#47e4c2" stroke-opacity=".23"/>
+<text x="2062.5" y="137" font-size="23" fill="#47e4c2" font-weight="500" text-anchor="middle" letter-spacing="0">ACTIVE PROFILE  /  LOCAL_FREE</text>
+<text x="2320" y="196" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="end" letter-spacing="0">Read-only investigation. Human-approved action.</text>
+<path d="M80 254H2320" stroke="#24354d"/>
+<rect x="80" y="285" width="345" height="74" rx="17" fill="#101b2c" stroke="#294055"/>
+<text x="103" y="331" font-size="23" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="0">01</text>
+<text x="148" y="332" font-size="25" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Submit logs</text>
+<path d="M429 322H450" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="459" y="285" width="345" height="74" rx="17" fill="#101b2c" stroke="#294055"/>
+<text x="482" y="331" font-size="23" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="0">02</text>
+<text x="527" y="332" font-size="25" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Authenticate</text>
+<path d="M808 322H829" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="838" y="285" width="345" height="74" rx="17" fill="#101b2c" stroke="#294055"/>
+<text x="861" y="331" font-size="23" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="0">03</text>
+<text x="906" y="332" font-size="25" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Retrieve evidence</text>
+<path d="M1187 322H1208" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="1217" y="285" width="345" height="74" rx="17" fill="#101b2c" stroke="#294055"/>
+<text x="1240" y="331" font-size="23" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="0">04</text>
+<text x="1285" y="332" font-size="25" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Analyze + verify</text>
+<path d="M1566 322H1587" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="1596" y="285" width="345" height="74" rx="17" fill="#101b2c" stroke="#294055"/>
+<text x="1619" y="331" font-size="23" fill="#ffc879" font-weight="600" text-anchor="start" letter-spacing="0">05</text>
+<text x="1664" y="332" font-size="25" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Review + approve</text>
+<path d="M1945 322H1966" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="1975" y="285" width="345" height="74" rx="17" fill="#101b2c" stroke="#294055"/>
+<text x="1998" y="331" font-size="23" fill="#ffc879" font-weight="600" text-anchor="start" letter-spacing="0">06</text>
+<text x="2043" y="332" font-size="25" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Ticket + memory</text>
+<rect x="80" y="410" width="470" height="425" rx="24" fill="url(#card)" stroke="#78bcff" stroke-opacity=".32" stroke-width="1.5"/>
+<rect x="80" y="410" width="470" height="425" rx="24" fill="none" stroke="#78bcff" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.45;.08" dur="8s" begin="-2s" repeatCount="indefinite"/></rect>
+<g transform="translate(105 437) scale(1.15)" stroke="#78bcff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="26" height="18" rx="3"/><path d="M9 26h10M14 20v6M7 8h7M7 13h14"/></g>
+<text x="153" y="461" font-size="18" fill="#78bcff" font-weight="600" text-anchor="start" letter-spacing="2">USER WORKSPACE</text>
+<text x="106" y="509" font-size="34" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">React + TypeScript</text>
+<text x="106" y="554" font-size="25" fill="#78bcff" font-weight="400" text-anchor="start" letter-spacing="0">Vite frontend · port 5180</text>
+<text x="106" y="610" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">11 connected workspace views</text>
+<text x="106" y="652" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Access token in tab memory</text>
+<text x="106" y="694" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Run-state polling every 5 s</text>
+<rect x="106" y="749" width="418" height="52" rx="13" fill="#78bcff" fill-opacity=".07" stroke="#78bcff" stroke-opacity=".23"/>
+<text x="315.0" y="783" font-size="23" fill="#78bcff" font-weight="500" text-anchor="middle" letter-spacing="0">Engineer → incident + logs</text>
+<rect x="600" y="410" width="500" height="425" rx="24" fill="url(#card)" stroke="#47e4c2" stroke-opacity=".32" stroke-width="1.5"/>
+<rect x="600" y="410" width="500" height="425" rx="24" fill="none" stroke="#47e4c2" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.45;.08" dur="8s" begin="-2s" repeatCount="indefinite"/></rect>
+<g transform="translate(625 437) scale(1.15)" stroke="#47e4c2" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 1l11 4v9c0 7-11 13-11 13S3 21 3 14V5zM8 13l4 4 8-8"/></g>
+<text x="673" y="461" font-size="18" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="2">API &amp; SECURITY BOUNDARY</text>
+<text x="626" y="509" font-size="34" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">FastAPI / Python</text>
+<text x="626" y="554" font-size="25" fill="#47e4c2" font-weight="400" text-anchor="start" letter-spacing="0">Pydantic validation · port 8010</text>
+<text x="626" y="610" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Authentication + input limits</text>
+<text x="626" y="652" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Redaction + injection checks</text>
+<text x="626" y="694" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Token budget + one active run</text>
+<rect x="626" y="749" width="448" height="52" rx="13" fill="#47e4c2" fill-opacity=".07" stroke="#47e4c2" stroke-opacity=".23"/>
+<text x="850.0" y="783" font-size="23" fill="#47e4c2" font-weight="500" text-anchor="middle" letter-spacing="0">Background task → run ID</text>
+<path d="M550 620H600" fill="none" stroke="#78bcff" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#78bcff" filter="url(#glow)"><animateMotion path="M550 620H600" dur="4s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="0s" repeatCount="indefinite"/></circle>
+<path d="M1100 620H1150" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#47e4c2" filter="url(#glow)"><animateMotion path="M1100 620H1150" dur="4s" begin="-1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-1s" repeatCount="indefinite"/></circle>
+<rect x="1150" y="410" width="1170" height="425" rx="24" fill="url(#card)" stroke="#b39aff" stroke-opacity=".32" stroke-width="1.5"/>
+<rect x="1150" y="410" width="1170" height="425" rx="24" fill="none" stroke="#b39aff" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.45;.08" dur="8s" begin="-2s" repeatCount="indefinite"/></rect>
+<g transform="translate(1175 437) scale(1.15)" stroke="#b39aff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="4"/><circle cx="24" cy="14" r="4"/><circle cx="5" cy="25" r="4"/><path d="M9 5h5v9h6M5 9v12M9 25h5V14"/></g>
+<text x="1223" y="461" font-size="18" fill="#b39aff" font-weight="600" text-anchor="start" letter-spacing="2">AGENT ORCHESTRATION</text>
+<text x="1176" y="509" font-size="34" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">LangGraph</text>
+<text x="1436" y="509" font-size="25" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Durable state · bounded reflection · approval gate</text>
+<rect x="1182" y="550" width="205" height="86" rx="15" fill="#142239" stroke="#47e4c2" stroke-opacity=".45"/>
+<rect x="1182" y="550" width="205" height="86" rx="15" fill="none" stroke="#47e4c2" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.6;.08" dur="4s" begin="0.0s" repeatCount="indefinite"/></rect>
+<text x="1284.5" y="584" font-size="25" fill="#edf5ff" font-weight="600" text-anchor="middle" letter-spacing="0">Triage</text>
+<text x="1284.5" y="615" font-size="19" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Parse signals</text>
+<path d="M1389 592H1403" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#47e4c2" filter="url(#glow)"><animateMotion path="M1389 592H1403" dur="4s" begin="-0.0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-0.0s" repeatCount="indefinite"/></circle>
+<rect x="1406" y="550" width="205" height="86" rx="15" fill="#142239" stroke="#b39aff" stroke-opacity=".45"/>
+<rect x="1406" y="550" width="205" height="86" rx="15" fill="none" stroke="#b39aff" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.6;.08" dur="4s" begin="-0.5s" repeatCount="indefinite"/></rect>
+<text x="1508.5" y="584" font-size="25" fill="#edf5ff" font-weight="600" text-anchor="middle" letter-spacing="0">Planner</text>
+<text x="1508.5" y="615" font-size="19" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Select a tool</text>
+<path d="M1613 592H1627" fill="none" stroke="#b39aff" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#b39aff" filter="url(#glow)"><animateMotion path="M1613 592H1627" dur="4s" begin="-0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-0.5s" repeatCount="indefinite"/></circle>
+<rect x="1630" y="550" width="205" height="86" rx="15" fill="#142239" stroke="#78bcff" stroke-opacity=".45"/>
+<rect x="1630" y="550" width="205" height="86" rx="15" fill="none" stroke="#78bcff" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.6;.08" dur="4s" begin="-1.0s" repeatCount="indefinite"/></rect>
+<text x="1732.5" y="584" font-size="25" fill="#edf5ff" font-weight="600" text-anchor="middle" letter-spacing="0">Tools</text>
+<text x="1732.5" y="615" font-size="19" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Retrieve evidence</text>
+<path d="M1837 592H1851" fill="none" stroke="#78bcff" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#78bcff" filter="url(#glow)"><animateMotion path="M1837 592H1851" dur="4s" begin="-1.0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-1.0s" repeatCount="indefinite"/></circle>
+<rect x="1854" y="550" width="205" height="86" rx="15" fill="#142239" stroke="#b39aff" stroke-opacity=".45"/>
+<rect x="1854" y="550" width="205" height="86" rx="15" fill="none" stroke="#b39aff" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.6;.08" dur="4s" begin="-1.5s" repeatCount="indefinite"/></rect>
+<text x="1956.5" y="584" font-size="25" fill="#edf5ff" font-weight="600" text-anchor="middle" letter-spacing="0">Analyst</text>
+<text x="1956.5" y="615" font-size="19" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Qwen hypothesis</text>
+<path d="M2061 592H2075" fill="none" stroke="#b39aff" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#b39aff" filter="url(#glow)"><animateMotion path="M2061 592H2075" dur="4s" begin="-1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-1.5s" repeatCount="indefinite"/></circle>
+<rect x="2078" y="550" width="205" height="86" rx="15" fill="#142239" stroke="#47e4c2" stroke-opacity=".45"/>
+<rect x="2078" y="550" width="205" height="86" rx="15" fill="none" stroke="#47e4c2" stroke-width="2" filter="url(#glow)"><animate attributeName="opacity" values=".08;.6;.08" dur="4s" begin="-2.0s" repeatCount="indefinite"/></rect>
+<text x="2180.5" y="584" font-size="25" fill="#edf5ff" font-weight="600" text-anchor="middle" letter-spacing="0">Verify</text>
+<text x="2180.5" y="615" font-size="19" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Quotes + sources</text>
+<path d="M2180 636V662H1956V637" fill="none" stroke="#b39aff" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#b39aff" filter="url(#glow)"><animateMotion path="M2180 636V662H1956V637" dur="4s" begin="-2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-2s" repeatCount="indefinite"/></circle>
+<text x="2030" y="691" font-size="19" fill="#b39aff" font-weight="500" text-anchor="middle" letter-spacing="0">Repair evidence · max 2 retries</text>
+<path d="M1285 636V704H1352V738" fill="none" stroke="#ffc879" stroke-opacity=".42" stroke-width="2" stroke-dasharray="6 7" marker-end="url(#amber)"/>
+<circle r="5" fill="#ffc879" filter="url(#glow)"><animateMotion path="M1285 636V704H1352V738" dur="8s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="8s" begin="0s" repeatCount="indefinite"/></circle>
+<path d="M1508 636V704H1352" fill="none" stroke="#ffc879" stroke-opacity=".42" stroke-width="2" stroke-dasharray="6 7"/>
+<path d="M2284 593H2303V716H1719V738" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#47e4c2" filter="url(#glow)"><animateMotion path="M2284 593H2303V716H1719V738" dur="4s" begin="-2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-2s" repeatCount="indefinite"/></circle>
+<text x="1520" y="733" font-size="17" fill="#47e4c2" font-weight="500" text-anchor="start" letter-spacing="0">Valid evidence</text>
+<rect x="1182" y="747" width="340" height="67" rx="14" fill="#ffc879" fill-opacity=".07" stroke="#ffc879" stroke-opacity=".5"/>
+<text x="1352.0" y="775" font-size="24" fill="#ffc879" font-weight="600" text-anchor="middle" letter-spacing="0">Human handoff</text>
+<text x="1352.0" y="801" font-size="18" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Unsafe / missing / unsupported</text>
+<rect x="1554" y="747" width="330" height="67" rx="14" fill="#ffc879" fill-opacity=".07" stroke="#ffc879" stroke-opacity=".5"/>
+<text x="1719.0" y="775" font-size="24" fill="#ffc879" font-weight="600" text-anchor="middle" letter-spacing="0">Human approval</text>
+<text x="1719.0" y="801" font-size="18" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Durable pause · approve / decline</text>
+<rect x="1916" y="747" width="372" height="67" rx="14" fill="#47e4c2" fill-opacity=".07" stroke="#47e4c2" stroke-opacity=".5"/>
+<text x="2102.0" y="775" font-size="24" fill="#47e4c2" font-weight="600" text-anchor="middle" letter-spacing="0">Local ticket + memory</text>
+<text x="2102.0" y="801" font-size="18" fill="#a8bad1" font-weight="400" text-anchor="middle" letter-spacing="0">Plan + reviewed hypothesis</text>
+<path d="M1884 780H1916" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2" marker-end="url(#arrow)"/>
+<circle r="5" fill="#47e4c2" filter="url(#glow)"><animateMotion path="M1884 780H1916" dur="4s" begin="-2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-2.5s" repeatCount="indefinite"/></circle>
+<path d="M1735 836V868" fill="none" stroke="#b39aff" stroke-opacity=".42" stroke-width="2"/>
+<circle r="5" fill="#b39aff" filter="url(#glow)"><animateMotion path="M1735 836V868" dur="4s" begin="-2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-2s" repeatCount="indefinite"/></circle>
+<path d="M80 880H2320" fill="none" stroke="#2b435b" stroke-width="1.5"/>
+<text x="80" y="918" font-size="18" fill="#7186a3" font-weight="600" text-anchor="start" letter-spacing="2.5">WORKFLOW SERVICES</text>
+<path d="M330 880V940" fill="none" stroke="#78bcff" stroke-opacity=".42" stroke-width="2"/>
+<circle r="5" fill="#78bcff" filter="url(#glow)"><animateMotion path="M330 880V940" dur="4s" begin="-0.33s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-0.33s" repeatCount="indefinite"/></circle>
+<circle cx="330" cy="880" r="4" fill="#78bcff"/>
+<path d="M810 880V940" fill="none" stroke="#b39aff" stroke-opacity=".42" stroke-width="2"/>
+<circle r="5" fill="#b39aff" filter="url(#glow)"><animateMotion path="M810 880V940" dur="4s" begin="-0.81s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-0.81s" repeatCount="indefinite"/></circle>
+<circle cx="810" cy="880" r="4" fill="#b39aff"/>
+<path d="M1260 880V940" fill="none" stroke="#47e4c2" stroke-opacity=".42" stroke-width="2"/>
+<circle r="5" fill="#47e4c2" filter="url(#glow)"><animateMotion path="M1260 880V940" dur="4s" begin="-1.26s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-1.26s" repeatCount="indefinite"/></circle>
+<circle cx="1260" cy="880" r="4" fill="#47e4c2"/>
+<path d="M1720 880V940" fill="none" stroke="#78bcff" stroke-opacity=".42" stroke-width="2"/>
+<circle r="5" fill="#78bcff" filter="url(#glow)"><animateMotion path="M1720 880V940" dur="4s" begin="-1.72s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-1.72s" repeatCount="indefinite"/></circle>
+<circle cx="1720" cy="880" r="4" fill="#78bcff"/>
+<path d="M2140 880V940" fill="none" stroke="#b39aff" stroke-opacity=".42" stroke-width="2"/>
+<circle r="5" fill="#b39aff" filter="url(#glow)"><animateMotion path="M2140 880V940" dur="4s" begin="-2.14s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.90;1" dur="4s" begin="-2.14s" repeatCount="indefinite"/></circle>
+<circle cx="2140" cy="880" r="4" fill="#b39aff"/>
+<rect x="80" y="940" width="500" height="340" rx="24" fill="url(#card)" stroke="#78bcff" stroke-opacity=".32" stroke-width="1.5"/>
+<g transform="translate(105 967) scale(1.15)" stroke="#78bcff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5C9 1 4 2 1 4v22c4-3 8-3 13 0 5-3 9-3 13 0V4c-3-2-8-3-13 1v21"/></g>
+<text x="153" y="991" font-size="18" fill="#78bcff" font-weight="600" text-anchor="start" letter-spacing="2">RAG / KNOWLEDGE</text>
+<text x="106" y="1039" font-size="32" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">Chroma + runbooks</text>
+<text x="106" y="1080" font-size="24" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">TXT / MD / JSON imports</text>
+<text x="106" y="1120" font-size="24" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Sentence-aware chunks</text>
+<text x="106" y="1160" font-size="24" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Nomic document/query prefixes</text>
+<text x="106" y="1200" font-size="24" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Top-3 vector evidence</text>
+<text x="106" y="1240" font-size="24" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Canonical source validation</text>
+<rect x="610" y="940" width="400" height="340" rx="24" fill="url(#card)" stroke="#b39aff" stroke-opacity=".32" stroke-width="1.5"/>
+<g transform="translate(635 967) scale(1.15)" stroke="#b39aff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="19" height="19" rx="5"/><path d="M10 1v4M19 1v4M10 24v4M19 24v4M1 10h4M1 19h4M24 10h4M24 19h4M11 19v-9l7 9v-9"/></g>
+<text x="683" y="991" font-size="18" fill="#b39aff" font-weight="600" text-anchor="start" letter-spacing="2">LOCAL MODEL LAYER</text>
+<text x="636" y="1039" font-size="34" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">Ollama</text>
+<text x="636" y="1082" font-size="27" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Qwen2.5</text>
+<text x="636" y="1118" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Planner + analyst</text>
+<text x="636" y="1173" font-size="26" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">nomic-embed-text</text>
+<text x="636" y="1209" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Local embeddings</text>
+<text x="636" y="1251" font-size="21" fill="#b39aff" font-weight="400" text-anchor="start" letter-spacing="0">No API charge in local mode</text>
+<rect x="1040" y="940" width="440" height="340" rx="24" fill="url(#card)" stroke="#47e4c2" stroke-opacity=".32" stroke-width="1.5"/>
+<g transform="translate(1065 967) scale(1.15)" stroke="#47e4c2" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3l8 8-3 3-8-8M10 16L2 24l3 3 8-8M17 12l9-9c3 7-1 13-8 13L9 25"/></g>
+<text x="1113" y="991" font-size="18" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="2">TOOLS / PERMISSIONS</text>
+<text x="1066" y="1039" font-size="32" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">Allowlisted tools</text>
+<text class="mono" x="1066" y="1083" font-size="25" fill="#a8bad1">search_runbooks</text>
+<text class="mono" x="1066" y="1124" font-size="25" fill="#a8bad1">search_memory</text>
+<text class="mono" x="1066" y="1165" font-size="25" fill="#a8bad1">request_human</text>
+<path d="M1066 1193H1454" stroke="#294052"/>
+<text x="1066" y="1232" font-size="23" fill="#47e4c2" font-weight="400" text-anchor="start" letter-spacing="0">Read-only · no shell execution</text>
+<rect x="1510" y="940" width="420" height="340" rx="24" fill="url(#card)" stroke="#78bcff" stroke-opacity=".32" stroke-width="1.5"/>
+<g transform="translate(1535 967) scale(1.15)" stroke="#78bcff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="14" cy="5" rx="12" ry="4"/><path d="M2 5v18c0 5 24 5 24 0V5M2 14c0 5 24 5 24 0"/></g>
+<text x="1583" y="991" font-size="18" fill="#78bcff" font-weight="600" text-anchor="start" letter-spacing="2">DATA + MEMORY</text>
+<text x="1536" y="1039" font-size="32" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">SQLite + WAL</text>
+<text x="1536" y="1080" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Documents · runs · tickets</text>
+<text x="1536" y="1120" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Durable graph checkpoints</text>
+<text x="1536" y="1160" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Reviewed hypothesis memory</text>
+<text x="1536" y="1200" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Canonical data stays local</text>
+<text x="1536" y="1245" font-size="21" fill="#78bcff" font-weight="400" text-anchor="start" letter-spacing="0">Vector indexes are rebuildable</text>
+<rect x="1960" y="940" width="360" height="340" rx="24" fill="url(#card)" stroke="#b39aff" stroke-opacity=".32" stroke-width="1.5"/>
+<g transform="translate(1985 967) scale(1.15)" stroke="#b39aff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M0 16h6l4-12 7 23 5-14h7"/></g>
+<text x="2033" y="991" font-size="18" fill="#b39aff" font-weight="600" text-anchor="start" letter-spacing="2">OBSERVABILITY</text>
+<text x="1986" y="1039" font-size="29" fill="#edf5ff" font-weight="600" text-anchor="start" letter-spacing="0">Trace + measure</text>
+<text x="1986" y="1080" font-size="22" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Tokens · latency · attempts</text>
+<text x="1986" y="1120" font-size="22" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">/api/ready</text>
+<text x="1986" y="1160" font-size="22" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">/api/operations</text>
+<text x="1986" y="1200" font-size="22" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Saved evals → dashboard</text>
+<text x="1986" y="1240" font-size="22" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Local trace records</text>
+<rect x="80" y="1340" width="1370" height="180" rx="22" fill="#0d1526" stroke="#665482" stroke-opacity=".65" stroke-dasharray="7 7"/>
+<g transform="translate(106 1365) scale(1.15)" stroke="#b39aff" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 23a7 7 0 01-2-14 10 10 0 0119 1 7 7 0 013 13z"/></g>
+<text x="154" y="1390" font-size="19" fill="#b39aff" font-weight="600" text-anchor="start" letter-spacing="1.7">OPTIONAL CLOUD ADAPTERS  /  DISABLED BY DEFAULT</text>
+<text x="106" y="1435" font-size="27" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">OpenRouter · Nebius · Pinecone · Mem0 · Langfuse</text>
+<text x="106" y="1471" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Keenable search · ElevenLabs voice · explicit memory / trace exports</text>
+<text x="106" y="1504" font-size="21" fill="#7186a3" font-weight="400" text-anchor="start" letter-spacing="0">Consent + credentials + budget required; live cloud operation unverified.</text>
+<rect x="1480" y="1340" width="840" height="180" rx="22" fill="#0e1927" stroke="#294455"/>
+<g transform="translate(1506 1365) scale(1.15)" stroke="#47e4c2" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="27" height="10" rx="3"/><rect x="1" y="17" width="27" height="10" rx="3"/><path d="M6 7h1M6 22h1M12 7h11M12 22h11"/></g>
+<text x="1554" y="1390" font-size="19" fill="#47e4c2" font-weight="600" text-anchor="start" letter-spacing="2">LOCAL DEPLOYMENT</text>
+<text x="1506" y="1435" font-size="27" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">UI :5180 → API :8010 · Chroma :8082</text>
+<text x="1506" y="1471" font-size="23" fill="#a8bad1" font-weight="400" text-anchor="start" letter-spacing="0">Single process · one active investigation</text>
+<text x="1506" y="1504" font-size="20" fill="#7186a3" font-weight="400" text-anchor="start" letter-spacing="0">Docker Compose / Nginx prepared; runtime unverified.</text>
+<text x="80" y="1571" font-size="24" fill="#edf5ff" font-weight="500" text-anchor="start" letter-spacing="0">Cited hypothesis → human decision → local recovery plan</text>
+<text x="2320" y="1571" font-size="20" fill="#7186a3" font-weight="400" text-anchor="end" letter-spacing="0">Illustrative motion · no automatic production remediation</text>
+</svg></html>

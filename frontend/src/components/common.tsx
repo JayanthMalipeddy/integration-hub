@@ -1,4 +1,4 @@
-import { Layers } from "lucide-react";
+import { Layers, type LucideIcon } from "lucide-react";
 export function Badge({ value }: { value: string }) {
   return <span className={"badge " + value}>{value.replaceAll("_", " ")}</span>;
 }
@@ -14,14 +14,19 @@ export function Stat({
   label,
   value,
   detail,
+  icon: Icon,
 }: {
+  icon?: LucideIcon;
   label: string;
   value: string | number;
   detail: string;
 }) {
   return (
     <div className="stat">
-      <span>{label}</span>
+      <span className="stat-label">
+        {label}
+        {Icon && <Icon size={18} aria-hidden="true" />}
+      </span>
       <strong>{value}</strong>
       <small>{detail}</small>
     </div>

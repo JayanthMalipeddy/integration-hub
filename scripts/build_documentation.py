@@ -199,3 +199,6 @@ if __name__=='__main__':
 
     if (DOCS / "QUALITY_VERIFICATION.md").exists():
         build("QUALITY_VERIFICATION.md", "Integration_Hub_Quality_Verification.docx", "Quality verification")
+
+    if (DOCS / "SECURITY_VERIFICATION.md").exists():
+        build("SECURITY_VERIFICATION.md", "Integration_Hub_Security_Verification.docx", "Security and operational verification")

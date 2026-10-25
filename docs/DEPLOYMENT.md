@@ -9,7 +9,7 @@ Python 3.12 environment, installed dependency versions pinned in requirements.tx
 - Data/logs: project-local runtime directory, ignored by Git.
 - API health and frontend HTTP responses checked. Frontend production build passed.
 
-Native startup loads this project's .env; existing process environment values override it. Set API_TOKEN for authenticated use and enter it in the Settings screen; it is retained only for the browser session. No keys are stored by the frontend.
+Native startup loads this project's .env; existing process environment values override it. Run `python -m scripts.configure_access` before startup, then enter API_TOKEN from the private .env file in the connection screen. Authentication is required by default. The browser retains the token only in tab memory, and Disconnect clears it. API docs and diagnostics also require the bearer header.
 
 ## Docker Compose — prepared, runtime not verified
 
@@ -27,7 +27,7 @@ Compose forwards core profile/LLM settings. To use optional sponsored add-ons in
 
 ## CI and separate repository
 
-The included `.github/workflows/ci.yml` runs fixture/API tests and frontend build without cloud credentials or Ollama. Real model evaluations are a separate explicit command. The project lives at C:\Projects\integration-hub, outside the Week 2 repository. Publish it as a separate repository to enable the included workflow. No repository has been created or pushed automatically.
+The included `.github/workflows/ci.yml` runs fixture/API tests and frontend build without cloud credentials or Ollama. Real model evaluations are a separate explicit command. The project lives at C:\Projects\integration-hub, outside the Week 2 repository. Publish it as a separate repository to enable the included workflow. The project repository is published; later local changes still require an explicit commit/push.
 
 ## Replit / portfolio
 
@@ -35,4 +35,10 @@ The API/frontend architecture can be hosted behind a reverse proxy. Replit deplo
 
 Public deployment is a later decision: authentication, organization-approved data handling, provider budgets and infrastructure configuration must be reviewed first.
 
-The current native configuration connects to the project-owned Chroma HTTP server on 127.0.0.1:8082, started with scripts/start-chroma.ps1. For Docker Desktop access to that host service use CHROMA_MODE=http and CHROMA_HOST=host.docker.internal in Compose. A loopback-only host service may require host networking configuration; container connectivity has not been verified. Use CHROMA_MODE=embedded for the self-contained container setup.
+The current native configuration connects to the shared Chroma HTTP server on 127.0.0.1:8082, started with scripts/start-chroma.ps1. For Docker Desktop access to that host service use CHROMA_MODE=http and CHROMA_HOST=host.docker.internal in Compose. A loopback-only host service may require host networking configuration; container connectivity has not been verified. Compose is configured to use the shared HTTP service; no separate Chroma container is started.
+
+## Operational verification
+
+Use authenticated GET /api/health for liveness and GET /api/ready for dependency readiness. Readiness returns 503 for missing required dependencies. GET /api/operations provides process-local counts and in-app alerts; it is not a distributed monitoring or paging service. See SECURITY_VERIFICATION.md for current executed checks.
+
+Compose requires API_TOKEN at configuration time and forces REQUIRE_AUTH=true. Nginx defines frame/referrer/content security headers, but these container settings have only been statically validated while the engine is unavailable. Public HTTPS and organizational identity must be configured before wider exposure.

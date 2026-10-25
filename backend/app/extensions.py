@@ -13,7 +13,7 @@ from typing import Protocol
 from urllib.parse import urlparse
 
 from .providers import HTTPProvider, ProviderError, LocalMemory, ChromaKnowledge
-from .security import redact
+from .security import redact, redact_data
 
 
 class SearchProvider(Protocol):
@@ -72,7 +72,7 @@ class PineconeKnowledge(HTTPProvider):
     def send(self,path,body):
         if not self.host: raise ProviderError('Pinecone host is not configured')
         self.gate.reserve('pinecone',self.key)
-        return self.request('POST',self.host+path,headers={'Api-Key':self.key,'X-Pinecone-Api-Version':'2025-10'},json=body)
+        return self.request('POST',self.host+path,headers={'Api-Key':self.key,'X-Pinecone-Api-Version':'2025-10'},json=redact_data(body))
 
     def rebuild(self,tenant):
         docs=self.store.list('document',tenant)

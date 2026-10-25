@@ -9,6 +9,7 @@ from typing import Protocol
 
 import httpx
 from .retrieval import INDEX_VERSION, chunk_text, embedding_inputs
+from .security import redact_data
 
 
 class ProviderError(RuntimeError):
@@ -82,7 +83,7 @@ class OllamaLLM(HTTPProvider):
 
     def generate(self, messages, schema):
         result = self.request("POST", self.s.ollama_url + "/api/chat", json={
-            "model": self.s.model, "messages": messages, "stream": False, "format": schema,
+            "model": self.s.model, "messages": redact_data(messages), "stream": False, "format": schema,
             "options": {"temperature": 0, "seed": 42, "num_ctx": 8192, "num_predict": self.s.max_output},
             "keep_alive": "10m"})
         try:
@@ -119,7 +120,7 @@ class OpenAICompatibleLLM(HTTPProvider):
                 ledger["reserved_usd"] += reserve
                 self.store.put("budget", "system", "cloud", ledger)
         base = "https://api.tokenfactory.nebius.com/v1" if s.profile == "sponsored" else "https://openrouter.ai/api/v1"
-        body = {"model": s.cloud_model, "messages": messages, "temperature": 0, "max_tokens": s.max_output,
+        body = {"model": s.cloud_model, "messages": redact_data(messages), "temperature": 0, "max_tokens": s.max_output,
                 "response_format": {"type": "json_schema", "json_schema": {"name": "agent_result", "schema": schema}}}
         if s.profile == "hybrid":
             body["provider"] = {"max_price": {"prompt": 0, "completion": 0}}
@@ -157,7 +158,7 @@ class OllamaEmbeddings(HTTPProvider):
         self.s = settings
 
     def embed(self, texts):
-        result = self.request("POST", self.s.ollama_url + "/api/embed", json={"model": self.s.embed_model, "input": texts, "truncate": False})
+        result = self.request("POST", self.s.ollama_url + "/api/embed", json={"model": self.s.embed_model, "input": redact_data(texts), "truncate": False})
         vectors = result.get("embeddings", [])
         if len(vectors) != len(texts) or not vectors or not vectors[0]:
             raise ProviderError("Embedding count/dimensions invalid")

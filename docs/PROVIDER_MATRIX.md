@@ -44,4 +44,4 @@ Local Whisper/Piper, a self-hosted SearXNG service, Phoenix and full self-hosted
 
 ## Local Chroma and paid model combination
 
-The existing local Chroma service is used through HttpClient at 127.0.0.1:8081, with an integration_hub_ collection prefix. Set CHROMA_MODE=http in .env; embedded remains available. VECTOR_STORE=chroma keeps Chroma for any AI_PROFILE, including sponsored. The table above describes profile defaults when VECTOR_STORE=auto. Changing these settings requires a backend restart; it does not enable paid calls or transmit data by itself.
+The existing local Chroma service is used through HttpClient at 127.0.0.1:8082, with an integration_hub_ collection prefix. Set CHROMA_MODE=http in .env; embedded remains available. VECTOR_STORE=chroma keeps Chroma for any AI_PROFILE, including sponsored. The table above describes profile defaults when VECTOR_STORE=auto. Changing these settings requires a backend restart; it does not enable paid calls or transmit data by itself.

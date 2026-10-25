@@ -29,7 +29,7 @@ def test_case2_missing_runbook_citation_is_corrected_inside_graph(tmp_path):
                 data=json.loads(messages[-1]['content'])
                 content=deepcopy(omitted)
                 if self.analyses == 2:
-                    assert data['correction']['previous_finding'] == omitted
+                    assert data['correction']['invalid_citations'] == omitted['citations']
                     assert any('retrieved evidence source' in error for error in data['correction']['errors'])
                     assert data['evidence'][0]['id']=='rb-rate:0'
                     content['citations'].append({'source_id':'rb-rate:0','quote':'HTTP 429 means that the upstream service is rate limiting requests.'})

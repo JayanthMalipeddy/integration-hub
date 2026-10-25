@@ -1,3 +1,5 @@
+> Current update (25 October 2026): [targeted gap repairs and verification](GAP_REPAIR_VERIFICATION.md) and [manual evidence contract](MANUAL_EVIDENCE.md) supersede the older behavior/counts below where indicated. Historical measurements remain preserved.
+
 # Integration Hub
 ## Project specification
 
@@ -122,6 +124,10 @@ The project demonstrates agent decisions, multiple steps, read-only tools, persi
 
 18/18 task checks passed (100.0%). Simulated approval completion: 12/12 eligible cases (100.0%).
 
-The current suite has 73 passing tests. Separate planner boundary checks passed 10/10; they measure tool selection only and are excluded from the workflow benchmark score. The six baseline and twelve original holdout cases now serve as development regressions after feedback-driven changes. They are not independent unseen validation. Evaluation storage and simulated approvals stay isolated. API and frontend-proxy dashboard responses match the complete saved result.
+The current suite has 110 passing tests. Separate planner boundary checks passed 10/10; they measure tool selection only and are excluded from the workflow benchmark score. The six baseline and twelve original holdout cases now serve as development regressions after feedback-driven changes. They are not independent unseen validation. Evaluation storage and simulated approvals stay isolated. API and frontend-proxy dashboard responses match the complete saved result.
 
 The planner requests missing evidence before retrieval, preserves searches for unfamiliar concrete failures and allows explicit requests for historical incidents. Model-correction feedback and approval state survive restarts. Earlier figures in this document are historical measurements. See QUALITY_VERIFICATION.md for complete evidence and limitations.
+
+## Security and operational verification
+
+Authentication is required by default. A browser connection screen keeps credentials in tab memory. Privacy filtering covers titles, nested records, model inputs/outputs, storage and exports; legacy data is filtered on read without claiming historical erasure. Request bodies are bounded even when streamed. Authenticated readiness and operations endpoints feed diagnostics. The full local workflow was rerun as eval-0ebc2478b3a7 with 18/18 passes and the separate planner suite passed 10/10. See SECURITY_VERIFICATION.md for the 110-test result, browser/API checks and production limitations.

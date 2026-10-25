@@ -1,3 +1,5 @@
+> Current update (25 October 2026): [targeted gap repairs and verification](GAP_REPAIR_VERIFICATION.md) and [manual evidence contract](MANUAL_EVIDENCE.md) supersede the older behavior/counts below where indicated. Historical measurements remain preserved.
+
 # Integration Hub
 ## Technical specification
 
@@ -102,11 +104,13 @@ Base URL: http://127.0.0.1:8010. Interactive API documentation: /docs. The front
 | POST | /api/documents/upload | UTF-8 TXT, MD or JSON; maximum 50 KB |
 | POST | /api/index/rebuild | Rebuild retrieval index while no investigation is active |
 | GET / DELETE | /api/memory; /api/memory/{id} | List or explicitly forget reviewed memory |
+| GET | /api/ready | Authenticated dependency readiness; 503 when degraded |
+| GET | /api/operations | Process-local request metrics and operational notices |
 | GET | /api/evaluations | Actual persisted benchmark records |
 | GET | /api/runs/{id}/report | Plain-text Markdown report with provenance |
 | GET | /api/samples | Synthetic example incidents |
 
-Incident input: title 3–160 characters, service 1–80 characters, logs 3–12,000 characters. Document text submitted as JSON is 20–50,000 characters; upload limits are byte-based. Schemas reject extra fields. Common responses include 401 for missing authentication when configured, 403 for rejected browser origin, 404 for absent records, 409 for conflicting run state, 413/415/422 for invalid documents and 429 for admission/rate limits.
+Incident input: title 3–160 characters, service 1–80 characters, logs 3–12,000 characters. Document text submitted as JSON is 20–50,000 characters; upload limits are byte-based. Schemas reject extra fields. Common responses include 401 for missing or invalid authentication, 403 for rejected browser origin, 404 for absent records, 409 for conflicting run state, 413/415/422 for invalid documents and 429 for admission/rate limits.
 
 ```json
 {
@@ -122,7 +126,7 @@ Incident input: title 3–160 characters, service 1–80 characters, logs 3–12
 |---|---|---|
 | Canonical records and trace events | runtime/hub.sqlite3 | SQLite snapshot and checksummed backup |
 | Graph transitions and interrupts | runtime/checkpoints.sqlite3 | Preserve with canonical database; resume same thread |
-| Derived vectors | runtime/chroma/ | Rebuild from canonical documents |
+| Derived vectors | C:/Projects/chroma db/server-data | Shared HTTP service; project-specific collections |
 | Synthetic corpus | data/runbooks.json; data/incidents.json | Versioned project files |
 | Benchmark artifacts | evaluations/results/ | Saved JSON; also persisted for dashboard consumption |
 | Secrets | Process environment | Reconfigure separately; excluded from backup and source |
@@ -137,7 +141,7 @@ The graph allows at most 18 steps and uses a 10,000-token budget check with a co
 
 The API admits one active investigation per process and limits new runs to six per minute. Use one backend worker; locks/rate limits are process-local. Failed nodes save state for retry. Stable ticket IDs prevent duplicate local tickets on replay.
 
-Controls include optional bearer authentication, fixed local browser identity, trusted hosts/origins, input limits, common-pattern secret/PII redaction, injection-pattern checks and deterministic tool authorization. Redaction and injection detection are not exhaustive. Cloud calls require explicit data/spending consent and configured budgets; conservative reservation estimates are not a replacement for provider-side hard limits.
+Controls include bearer authentication required by default, fixed local browser identity, trusted hosts/origins, input limits, common-pattern secret/PII redaction, injection-pattern checks and deterministic tool authorization. Redaction and injection detection are not exhaustive. Cloud calls require explicit data/spending consent and configured budgets; conservative reservation estimates are not a replacement for provider-side hard limits.
 
 ## 9. Verification baseline and limitations
 
@@ -161,7 +165,7 @@ Related documents: ARCHITECTURE.md, AGENT_WORKFLOWS.md, PROVIDER_MATRIX.md, SECU
 
 ## 11. Existing Chroma service connection
 
-The current laptop configuration uses the project-owned Chroma server at http://127.0.0.1:8082 through the Chroma HttpClient. Its collection is named integration_hub_ followed by a tenant/model/index-version fingerprint. Other applications' collections are not used or cleared. The earlier benchmark used embedded Chroma; its timings are retained as historical measurements, not represented as a new HTTP benchmark.
+The current laptop configuration uses the shared Chroma server at http://127.0.0.1:8082 through the Chroma HttpClient. Its collection is named integration_hub_ followed by a tenant/model/index-version fingerprint. Other applications' collections are not used or cleared. The earlier benchmark used embedded Chroma; its timings are retained as historical measurements, not represented as a new HTTP benchmark.
 
 CHROMA_MODE selects http or embedded; CHROMA_HOST and CHROMA_PORT set the local endpoint. VECTOR_STORE=chroma allows the same server to be used with the sponsored paid-model profile. VECTOR_STORE=auto preserves profile defaults. The project-local .env is loaded at startup with process environment precedence. Health status uses a real server heartbeat, and a connection failure does not silently change the storage backend.
 
@@ -170,6 +174,10 @@ CHROMA_MODE selects http or embedded; CHROMA_HOST and CHROMA_PORT set the local 
 
 18/18 task checks passed (100.0%). Simulated approval completion: 12/12 eligible cases (100.0%).
 
-The current suite has 73 passing tests. Separate planner boundary checks passed 10/10; they measure tool selection only and are excluded from the workflow benchmark score. The six baseline and twelve original holdout cases now serve as development regressions after feedback-driven changes. They are not independent unseen validation. Evaluation storage and simulated approvals stay isolated. API and frontend-proxy dashboard responses match the complete saved result.
+The current suite has 110 passing tests. Separate planner boundary checks passed 10/10; they measure tool selection only and are excluded from the workflow benchmark score. The six baseline and twelve original holdout cases now serve as development regressions after feedback-driven changes. They are not independent unseen validation. Evaluation storage and simulated approvals stay isolated. API and frontend-proxy dashboard responses match the complete saved result.
 
 The planner requests missing evidence before retrieval, preserves searches for unfamiliar concrete failures and allows explicit requests for historical incidents. Model-correction feedback and approval state survive restarts. Earlier figures in this document are historical measurements. See QUALITY_VERIFICATION.md for complete evidence and limitations.
+
+## Security and operational verification
+
+Authentication is required by default. A browser connection screen keeps credentials in tab memory. Privacy filtering covers titles, nested records, model inputs/outputs, storage and exports; legacy data is filtered on read without claiming historical erasure. Request bodies are bounded even when streamed. Authenticated readiness and operations endpoints feed diagnostics. The full local workflow was rerun as eval-0ebc2478b3a7 with 18/18 passes and the separate planner suite passed 10/10. See SECURITY_VERIFICATION.md for the 110-test result, browser/API checks and production limitations.

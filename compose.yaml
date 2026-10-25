@@ -13,11 +13,12 @@ services:
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:latest}
       EMBED_MODEL: ${EMBED_MODEL:-nomic-embed-text:latest}
       VECTOR_STORE: ${VECTOR_STORE:-auto}
-      CHROMA_MODE: ${CHROMA_MODE:-embedded}
-      CHROMA_HOST: ${CHROMA_HOST:-host.docker.internal}
-      CHROMA_PORT: ${CHROMA_PORT:-8081}
+      CHROMA_MODE: http
+      CHROMA_HOST: ${SHARED_CHROMA_HOST:-host.docker.internal}
+      CHROMA_PORT: ${CHROMA_PORT:-8082}
       DATA_DIR: /app/runtime
-      API_TOKEN: ${API_TOKEN:-}
+      API_TOKEN: ${API_TOKEN:?Set API_TOKEN before starting Compose}
+      REQUIRE_AUTH: "true"
       ALLOW_CLOUD: ${ALLOW_CLOUD:-false}
       ALLOW_PAID: ${ALLOW_PAID:-false}
       CLOUD_DATA_CONSENT: ${CLOUD_DATA_CONSENT:-false}

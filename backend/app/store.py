@@ -4,6 +4,7 @@ import sqlite3
 import threading
 from contextlib import closing
 from datetime import datetime, timezone
+from .security import redact_data
 
 
 def now():
@@ -22,17 +23,17 @@ class Store:
 
     def put(self, kind, tenant, id, body):
         with self.lock, self.db:
-            self.db.execute("INSERT OR REPLACE INTO records VALUES (?,?,?,?)", (kind, tenant, id, json.dumps(body)))
+            self.db.execute("INSERT OR REPLACE INTO records VALUES (?,?,?,?)", (kind, tenant, id, json.dumps(redact_data(body))))
 
     def get(self, kind, tenant, id):
         with self.lock:
             row = self.db.execute("SELECT body FROM records WHERE kind=? AND tenant=? AND id=?", (kind, tenant, id)).fetchone()
-        return json.loads(row[0]) if row else None
+        return redact_data(json.loads(row[0])) if row else None
 
     def list(self, kind, tenant):
         with self.lock:
             rows = self.db.execute("SELECT body FROM records WHERE kind=? AND tenant=? ORDER BY rowid DESC", (kind, tenant)).fetchall()
-        return [json.loads(r[0]) for r in rows]
+        return [redact_data(json.loads(r[0])) for r in rows]
 
     def delete(self, kind, tenant, id):
         with self.lock, self.db:

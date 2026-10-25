@@ -3,6 +3,8 @@ $projectRoot = Split-Path $PSScriptRoot -Parent
 Set-Location -LiteralPath $projectRoot
 $pythonPath = Join-Path $projectRoot '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $pythonPath)) { throw 'Create a virtual environment and install requirements.txt first.' }
+& $pythonPath -m scripts.configure_access
+if ($LASTEXITCODE -ne 0) { throw 'Could not configure API authentication.' }
 $logDirectory = Join-Path $projectRoot 'runtime\logs'
 New-Item -ItemType Directory -Force -Path $logDirectory | Out-Null
 & (Join-Path $PSScriptRoot 'start-chroma.ps1')

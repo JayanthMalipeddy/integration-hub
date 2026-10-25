@@ -19,7 +19,7 @@ class Settings:
     vector_store: str = "auto"
     chroma_mode: str = "embedded"
     chroma_host: str = "127.0.0.1"
-    chroma_port: int = 8081
+    chroma_port: int = 8082
     cloud_key: str = ""
     cloud_model: str = ""
     allow_cloud: bool = False
@@ -30,6 +30,7 @@ class Settings:
     input_price: float = 0
     output_price: float = 0
     api_token: str = ""
+    require_auth: bool = True
     timeout: float = 180
     max_output: int = 700
     max_steps: int = 18
@@ -46,16 +47,17 @@ class Settings:
             model=os.getenv("OLLAMA_MODEL", "qwen2.5:latest"),
             embed_model=os.getenv("EMBED_MODEL", "nomic-embed-text:latest"),
             vector_store=os.getenv("VECTOR_STORE", "auto"),
-            chroma_mode=os.getenv("CHROMA_MODE", "embedded"),
+            chroma_mode=os.getenv("CHROMA_MODE", "http"),
             chroma_host=os.getenv("CHROMA_HOST", "127.0.0.1"),
-            chroma_port=int(os.getenv("CHROMA_PORT", "8081")),
+            chroma_port=int(os.getenv("CHROMA_PORT", "8082")),
             cloud_key=os.getenv("CLOUD_API_KEY", ""), cloud_model=os.getenv("CLOUD_MODEL", ""),
             allow_cloud=flag("ALLOW_CLOUD"), allow_paid=flag("ALLOW_PAID"),
             data_consent=flag("CLOUD_DATA_CONSENT"), local_fallback=flag("ALLOW_LOCAL_FALLBACK"),
             max_cost=float(os.getenv("MAX_COST_USD", "0")),
             input_price=float(os.getenv("CLOUD_INPUT_USD_PER_MILLION", "0")),
             output_price=float(os.getenv("CLOUD_OUTPUT_USD_PER_MILLION", "0")),
-            api_token=os.getenv("API_TOKEN", ""))
+            api_token=os.getenv("API_TOKEN", ""),
+            require_auth=os.getenv("REQUIRE_AUTH", "true").lower() == "true")
         if s.profile not in {"local_free", "hybrid", "sponsored"}:
             raise ValueError("AI_PROFILE must be local_free, hybrid or sponsored")
         if s.vector_store not in {"auto", "chroma", "pinecone"}:
@@ -86,6 +88,7 @@ class Settings:
                 "cloud_data_consent": self.data_consent, "paid_enabled": self.allow_paid,
                 "max_cost_usd": self.max_cost, "max_steps": self.max_steps,
                 "max_tokens": self.max_tokens, "authentication": bool(self.api_token),
+                "authentication_required": self.require_auth,
                 "max_corrections": self.max_corrections,
                 "local_fallback": self.local_fallback,
                 "vector_store": self.effective_vector_store,

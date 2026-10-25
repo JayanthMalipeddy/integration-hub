@@ -23,8 +23,8 @@ export function EvaluationsPage({
           <option value="">Latest completed benchmark</option>
           {dashboard.evaluations.map((e: Item) => (
             <option key={e.id} value={e.id}>
-              {new Date(e.timestamp).toLocaleString()} ? {e.dataset_size} cases
-              ? {e.metrics.task_passed.percent}%
+              {new Date(e.timestamp).toLocaleString()} · {e.dataset_size} cases
+              · {e.metrics.task_passed.percent}%
             </option>
           ))}
         </select>
@@ -38,32 +38,42 @@ export function EvaluationsPage({
             {latest.profile} · {latest.model} · {latest.dataset_size} synthetic
             cases
           </div>
+          <div className="alert" role="status">
+            Benchmark freshness: {latest.freshness?.status || "unverified"}.{" "}
+            {latest.freshness?.reason ||
+              "No complete manifest was recorded for this historical run."}
+            <br />
+            Workflow completion and extractive evidence checks are not
+            root-cause accuracy. Diagnostic accuracy is not measured.
+          </div>
           {latest.configuration && (
-            <section>
-              <h2>Benchmark configuration</h2>
-              <p>
-                {latest.configuration.chroma_mode} Chroma ·{" "}
-                {latest.configuration.embedding_model} ·{" "}
-                {latest.configuration.index_version}
-              </p>
-              <p>
-                {latest.approval_mode}. Task pass means a valid proposal or the
-                expected handoff; completion measures local ticket and memory
-                writes after simulated approval.
-              </p>
-              <p>
-                Baseline: {latest.split_metrics.baseline.task_passed.passed}/
-                {latest.split_metrics.baseline.task_passed.total} · Holdout:{" "}
-                {latest.split_metrics.holdout.task_passed.passed}/
-                {latest.split_metrics.holdout.task_passed.total}
-              </p>
+            <section className="benchmark-config">
               <details>
-                <summary>Dataset and code fingerprints</summary>
-                <p style={{ overflowWrap: "anywhere" }}>
-                  Dataset: {latest.dataset_version}
-                  <br />
-                  Code: {latest.code_version}
+                <summary>Benchmark configuration & reproducibility</summary>
+                <p>
+                  {latest.configuration.chroma_mode} Chroma ·{" "}
+                  {latest.configuration.embedding_model} ·{" "}
+                  {latest.configuration.index_version}
                 </p>
+                <p>
+                  {latest.approval_mode}. Task pass means a valid proposal or
+                  the expected handoff; completion measures local ticket and
+                  memory writes after simulated approval.
+                </p>
+                <p>
+                  Baseline: {latest.split_metrics.baseline.task_passed.passed}/
+                  {latest.split_metrics.baseline.task_passed.total} · Holdout:{" "}
+                  {latest.split_metrics.holdout.task_passed.passed}/
+                  {latest.split_metrics.holdout.task_passed.total}
+                </p>
+                <details>
+                  <summary>Dataset and code fingerprints</summary>
+                  <p style={{ overflowWrap: "anywhere" }}>
+                    Dataset: {latest.dataset_version}
+                    <br />
+                    Code: {latest.code_version}
+                  </p>
+                </details>
               </details>
             </section>
           )}
@@ -84,9 +94,10 @@ export function EvaluationsPage({
           <section>
             <h2>Measured retrieval comparison</h2>
             <p className="muted">
-              Four-runbook corpus. Vector timing includes local query embedding.
-              See the run limitations for repetition counts and measurement
-              order. These results apply to this workload.
+              Recorded corpus: {latest.corpus_size || "historical"} runbooks.
+              Vector timing includes local query embedding. See the run
+              limitations for repetition counts and measurement order. These
+              results apply to this workload.
             </p>
             {["lexical", "vector"].map((mode) => {
               const rows = latest.retrieval_comparison.filter(
@@ -146,7 +157,24 @@ export function EvaluationsPage({
                     {(r.latency_ms / 1000).toFixed(1)} s
                   </span>
                 </summary>
-                <pre>{JSON.stringify(r, null, 2)}</pre>
+                <div className="case-facts">
+                  <span>
+                    Outcome
+                    <strong>
+                      {r.task_passed
+                        ? "Expected behavior verified"
+                        : "Review failed checks"}
+                    </strong>
+                  </span>
+                  <span>
+                    Execution time
+                    <strong>{(r.latency_ms / 1000).toFixed(1)} seconds</strong>
+                  </span>
+                </div>
+                <details>
+                  <summary>Inspect recorded evidence</summary>
+                  <pre>{JSON.stringify(r, null, 2)}</pre>
+                </details>
                 {!latest.configuration && (
                   <button
                     onClick={() => {

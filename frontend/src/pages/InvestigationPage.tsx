@@ -1,3 +1,4 @@
+import { EvidenceFollowUp } from "../components/EvidenceFollowUp";
 import type { PageState } from "../hooks/useHub";
 import { ArrowUpRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Badge, Empty } from "../components/common";
@@ -37,7 +38,14 @@ export function InvestigationPage({
     <>
       {runPicker}
       {!run ? (
-        <Empty text="Choose an investigation or start one in the agent workspace." />
+        selected ? (
+          <div className="alert" role="status">
+            <LoaderCircle className="spin" size={18} />
+            Loading the selected investigation...
+          </div>
+        ) : (
+          <Empty text="Choose an investigation or start one in the agent workspace." />
+        )
       ) : (
         <>
           <div className="section-heading">
@@ -45,7 +53,7 @@ export function InvestigationPage({
             <Badge value={run.status} />
           </div>
           {run.status === "running" && (
-            <div className="alert">
+            <div className="alert" role="status">
               <LoaderCircle className="spin" size={18} />
               Stage:{" "}
               {run.traces?.filter((t: Item) => t.phase === "started").at(-1)
@@ -60,14 +68,46 @@ export function InvestigationPage({
             </div>
           )}
           {run.error && <div className="alert error">{run.error}</div>}
+          <EvidenceFollowUp
+            key={`${run.id}:${run.evidence_revision || 1}`}
+            runId={run.id}
+            revision={run.evidence_revision || 1}
+            status={run.status}
+            observations={run.observations || []}
+            questions={run.questions || []}
+            busy={busy}
+            act={act}
+            setNotice={setNotice}
+          />
           {finding && (
             <div className="two-columns">
               <section>
                 <div className="section-heading">
-                  <h2>Root-cause hypothesis</h2>
+                  <h2>
+                    {run.observations
+                      ? "Evidence summary"
+                      : "Unverified draft hypothesis"}
+                  </h2>
                   <Badge value={finding.confidence + " confidence"} />
                 </div>
+                {(!run.validation?.passed ||
+                  !run.validation?.observation_grounding) && (
+                  <div className="alert error" role="status">
+                    Unverified draft: do not treat this as an established cause
+                    or an approved recovery plan.
+                  </div>
+                )}
                 <p className="finding">{finding.hypothesis}</p>
+                <p className="muted">
+                  Root cause remains unverified. Approval records a review, not
+                  proof of causation.
+                </p>
+                {run.context_coverage && (
+                  <p className="muted">
+                    Model context: {run.context_coverage.coverage}. Full
+                    submitted evidence is retained.
+                  </p>
+                )}
                 <div className="uncertainty">
                   <strong>What remains uncertain</strong>
                   <p>{finding.uncertainty}</p>
@@ -89,6 +129,16 @@ export function InvestigationPage({
                 <h2>Evidence trail</h2>
                 {finding.citations.map((c: Item, i: number) => (
                   <blockquote key={i}>
+                    <div className="citation-heading">
+                      <span className="eyebrow">Source {i + 1}</span>
+                      <strong>
+                        {c.source_id === "incident:logs"
+                          ? "Incident log evidence"
+                          : run.evidence?.find(
+                              (e: Item) => e.id === c.source_id,
+                            )?.title || c.source_id}
+                      </strong>
+                    </div>
                     <code>{c.source_id}</code>
                     <p>“{c.quote}”</p>
                     <Badge

@@ -15,6 +15,7 @@ from backend.app.store import Store, now
 from backend.app.workflow import InvestigationWorkflow
 from evaluations.scoring import score_case
 from scripts.seed import seed
+from backend.app.provenance import manifest, fingerprints
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,16 +29,17 @@ def metric(values):
 
 def metrics(rows):
     keys = ("task_passed", "category_correct", "tool_correct", "retrieval_hit_at_3",
-            "expected_document_cited", "structured_output", "no_write_before_approval", "completion_passed")
-    result = {key: metric([r[key] for r in rows]) for key in keys}
+            "expected_document_cited", "structured_output", "no_write_before_approval", "completion_passed", "observation_grounding", "diagnostic_accuracy")
+    result = {key: metric([r.get(key) for r in rows]) for key in keys}
     result["citation_integrity"] = metric([c["valid"] for r in rows for c in r["citation_checks"]])
     return result
 
 
-def evaluate():
+def evaluate(first_case=None):
     live = Settings.from_env()
     if live.profile != "local_free" or live.effective_vector_store != "chroma":
         raise ValueError("This benchmark requires local_free and Chroma; no paid calls are authorized by the harness")
+    frozen_manifest = manifest(live)
     evaluation_id = "eval-" + uuid.uuid4().hex[:12]
     settings = replace(live, data_dir=live.data_dir / "evaluations" / evaluation_id)
     store = Store(settings.data_dir)
@@ -49,10 +51,15 @@ def evaluate():
     for document in store.list("document", "local"):
         store.put("document", tenant, document["id"], document)
     cases, dataset_digest = [], hashlib.sha256()
-    for filename, split in (("incidents.json", "baseline"), ("incidents_holdout.json", "holdout")):
+    for filename, split in (("incidents.json", "baseline"), ("incidents_holdout.json", "holdout"), ("incidents_operational.json", "operational")):
         raw = (ROOT / "data" / filename).read_bytes()
         dataset_digest.update(raw)
         cases.extend({**c, "split": split} for c in json.loads(raw))
+    if first_case is not None:
+        if first_case not in {case["id"] for case in cases}:
+            raise ValueError("Unknown first_case; no benchmark cases may be omitted")
+        cases.sort(key=lambda case: case["id"] != first_case)
+    frozen_manifest["case_order"] = [case["id"] for case in cases]
     providers.knowledge.rebuild(tenant)
     rows = []
     for case in cases:
@@ -69,13 +76,13 @@ def evaluate():
                "citation_checks": result.get("validation", {}).get("citations", []),
                "latency_ms": round((time.perf_counter() - started) * 1000, 2), "calls": result.get("calls", []),
                "analysis_attempts": result.get("analysis_attempts", 0), "error": result.get("error"),
-               "finding": result.get("finding"), "decision": result.get("decision"), "completion_passed": None}
+               "finding": result.get("finding"), "observations": result.get("observations", []), "validation": result.get("validation"), "decision": result.get("decision"), "completion_passed": None}
         # A test operator approves only successful proposals, in this isolated synthetic dataset.
         # This measures local completion mechanics, never human-rated RCA quality.
         if case["expected_document"]:
             row["completion_passed"] = False
             if row["task_passed"]:
-                done = workflow.run(tenant=tenant, id=run_id, approval={"approved": True, "note": "Synthetic benchmark operator; not a real incident approval"})
+                done = workflow.run(tenant=tenant, id=run_id, approval={"approved": True, "review_digest": result.get("review_digest"), "note": "Synthetic benchmark operator; not a real incident approval"})
                 row["completion_passed"] = bool(done["status"] == "completed"
                     and store.get("ticket", tenant, "REC-" + run_id[:8]) and store.get("memory", tenant, run_id))
                 row["completion_status"] = done["status"]
@@ -98,18 +105,16 @@ def evaluate():
                     ids = [d["id"] for d in docs]
                 comparisons.append({"case": case["id"], "mode": mode, "repetition": repetition,
                     "latency_ms": round((time.perf_counter() - started) * 1000, 3),
-                    "hit_at_3": case["expected_document"] in ids,
-                    "top1_correct": bool(ids and ids[0] == case["expected_document"]), "ids": ids})
-    code_digest = hashlib.sha256()
-    for path in sorted([*(ROOT / "backend/app").glob("*.py"), *(ROOT / "evaluations").glob("*.py")]):
-        code_digest.update(path.relative_to(ROOT).as_posix().encode())
-        code_digest.update(path.read_bytes())
+                    "hit_at_3": any(d in ids for d in case.get("acceptable_documents", [case["expected_document"]])),
+                    "top1_correct": bool(ids and ids[0] in case.get("acceptable_documents", [case["expected_document"]])), "ids": ids})
+    if fingerprints() != frozen_manifest["fingerprints"]:
+        raise RuntimeError("Source, corpus or dataset changed during execution; raw progress retained, aggregate not published")
     report = {"id": evaluation_id, "timestamp": now(), "profile": settings.profile, "model": settings.model,
-              "dataset_version": dataset_digest.hexdigest(), "dataset_size": len(cases), "code_version": code_digest.hexdigest(),
+              "dataset_version": dataset_digest.hexdigest(), "dataset_size": len(cases), "code_version": frozen_manifest["fingerprints"]["code"], "manifest": frozen_manifest, "corpus_size": len(store.list("document", tenant)),
               "configuration": {"embedding_model": settings.embed_model, "index_version": INDEX_VERSION,
                                 "chroma_mode": settings.chroma_mode, "chroma_endpoint": settings.public()["chroma_endpoint"],
                                 "max_corrections": settings.max_corrections, "max_steps": settings.max_steps},
-              "metrics": metrics(rows), "split_metrics": {split: metrics([r for r in rows if r["split"] == split]) for split in ("baseline", "holdout")},
+              "metrics": metrics(rows), "split_metrics": {split: metrics([r for r in rows if r["split"] == split]) for split in ("baseline", "holdout", "operational")},
               "mean_latency_ms": round(statistics.mean(r["latency_ms"] for r in rows), 2),
               "total_tokens": sum((c.get("input_tokens") or 0) + (c.get("output_tokens") or 0) for r in rows for c in r["calls"]),
               "approximate_api_cost_usd": sum(c.get("cost_usd") or 0 for r in rows for c in r["calls"]),
@@ -117,7 +122,7 @@ def evaluate():
               "approval_mode": "simulated operator in isolated synthetic evaluation storage",
               "not_measured": ["semantic claim entailment", "human-rated RCA usefulness", "production incident accuracy", "live paid-provider interoperability"],
               "other_profiles": {p: "not_run" for p in ("hybrid", "sponsored")},
-              "limitations": "18 synthetic cases (6 baseline, 12 newly authored holdout); one workflow run each. The original holdout split is retained for historical comparison, but those cases are now known development regressions after feedback-driven planner changes; they are not independent unseen validation. Four runbooks. Retrieval has three order-alternated repetitions per query; vector timing includes local embeddings and HTTP. Completion uses simulated approvals. Exact quotes do not prove semantic support. Hardware/electricity excluded."}
+              "limitations": "24 synthetic/anonymized regression scenarios (6 baseline, 12 former holdout, 6 operational-style cases); one workflow run each. The original holdout split is retained for historical comparison, but those cases are now known development regressions after feedback-driven planner changes; they are not independent unseen validation. Six runbooks. Accepted observations are extractive; model causal prose is not promoted to a verified finding. Retrieval has three order-alternated repetitions per query; vector timing includes local embeddings and HTTP. Completion uses simulated approvals. Exact quotes do not prove semantic support. Hardware/electricity excluded."}
     output = ROOT / "evaluations/results" / (evaluation_id + ".json")
     output.write_text(json.dumps(report, indent=2), encoding="utf-8")
     # Publish only the result summary. Evaluation tickets, memory and checkpoints stay isolated.

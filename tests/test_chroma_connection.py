@@ -38,7 +38,7 @@ def test_http_client_is_lazy_and_project_scoped(tmp_path, monkeypatch):
     p = ChromaKnowledge(settings, Store(tmp_path), None)
     assert calls == []
     p.collection('local')
-    assert calls[0]['host'] == '127.0.0.1' and calls[0]['port'] == 8081
+    assert calls[0]['host'] == '127.0.0.1' and calls[0]['port'] == 8082
     assert calls[1].startswith('integration_hub_')
     assert p.collection_name('other') != p.collection_name('local')
     assert calls[1] not in {'cbuae_regulations','cbuae_eval_runs'}
@@ -85,3 +85,12 @@ def test_rebuild_modifies_only_selected_project_collection(tmp_path, monkeypatch
     assert operations[0][1].startswith('integration_hub_')
     assert operations[1]==('delete',{'ids':['old-app-chunk']})
     assert operations[2][1]['ids']==['rb:0']
+
+
+def test_default_application_connection_is_shared_http(tmp_path, monkeypatch):
+    for key in ("CHROMA_MODE", "CHROMA_HOST", "CHROMA_PORT"):
+        monkeypatch.delenv(key, raising=False)
+    settings = Settings.from_env(tmp_path / "no-env")
+    assert settings.chroma_mode == "http"
+    assert settings.chroma_host == "127.0.0.1"
+    assert settings.chroma_port == 8082

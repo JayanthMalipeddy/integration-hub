@@ -16,8 +16,8 @@ export function SettingsPage({
       <section>
         <h2>Connection</h2>
         <p>
-          Single-user, local development mode. If the backend has API_TOKEN
-          configured, enter it here for this browser session.
+          This local workspace uses an API access token. You can replace the
+          token for this browser tab or disconnect below.
         </p>
         <label>
           API access token
@@ -37,6 +37,15 @@ export function SettingsPage({
           }}
         >
           Connect
+        </button>
+        <button
+          onClick={() => {
+            setAccessToken("");
+            setToken("");
+            void refresh();
+          }}
+        >
+          Disconnect
         </button>
         <h3>Appearance</h3>
         <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>

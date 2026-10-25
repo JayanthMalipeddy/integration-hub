@@ -1,6 +1,8 @@
+> Current update (25 October 2026): [targeted gap repairs and verification](GAP_REPAIR_VERIFICATION.md) and [manual evidence contract](MANUAL_EVIDENCE.md) supersede the older behavior/counts below where indicated. Historical measurements remain preserved.
+
 # Integration Hub quality verification
 
-Measured run: eval-8881397d2059 at 2026-10-24T17:31:48.051201+00:00.
+Measured run: eval-0ebc2478b3a7 at 2026-10-24T18:43:22.672537+00:00.
 
 18/18 task checks passed (100.0%). Simulated approval completion: 12/12 eligible cases (100.0%).
 
@@ -16,11 +18,11 @@ Measured run: eval-8881397d2059 at 2026-10-24T17:31:48.051201+00:00.
 
 ## Verification
 
-- 73 Python tests passed, including nine planner routing regressions and the existing correction, approval, security and provider tests.
+- 110 Python tests passed, including the planner suite and 37 additional authentication, privacy, request-limit, readiness and adversarial tests.
 - Separate planner boundary checks: 10/10 passed, using nine real local-model calls and one deterministic blank-log shortcut. These checks measure tool choice, not retrieval quality or complete investigations.
 - The active backend was restarted with the updated planner. API and frontend-proxy dashboard responses exactly match the complete latest benchmark artifact.
 - Current workflow and evaluation code hashes match the measured artifacts; the 18-case dataset is unchanged from the previous benchmark.
-- Earlier frontend build, lint, formatting and eleven-view browser checks remain historical verification. This update changes no frontend source.
+- Frontend build, lint and formatting checks passed after the access-screen and operational-panel changes. Eight targeted live browser checks passed; earlier eleven-view checks remain historical evidence.
 - Evaluation checkpoints, tickets and memory stay in isolated storage. The dashboard receives the completed report only.
 
 ## Measured outcomes
@@ -40,9 +42,9 @@ The previous run scored 15/18 (83.33%). Its three planner failures eventually re
 
 | Case | Previous time (s) | New time (s) | New tool | Analyst calls | Task check |
 |---|---:|---:|---|---:|---|
-| missing-evidence | 110.15 | 17.32 | request_human | 0 | Passed |
-| holdout-no-logs | 323.40 | 14.82 | request_human | 0 | Passed |
-| holdout-healthy | 200.47 | 16.51 | request_human | 0 | Passed |
+| missing-evidence | 110.15 | 16.59 | request_human | 0 | Passed |
+| holdout-no-logs | 323.40 | 16.89 | request_human | 0 | Passed |
+| holdout-healthy | 200.47 | 18.21 | request_human | 0 | Passed |
 
 These are individual observed timings, not repeated controlled performance trials. Nonblank inputs still require a model decision. The blank-input shortcut does not imply millisecond latency for all insufficient-evidence cases.
 
@@ -50,15 +52,15 @@ These are individual observed timings, not repeated controlled performance trial
 
 | Retrieval | Mean latency (ms) | Correct top-1 | Measurements |
 |---|---:|---:|---:|
-| lexical | 0.334 | 36 | 36 |
-| vector | 175.946 | 36 | 36 |
+| lexical | 2.576 | 36 | 36 |
+| vector | 210.098 | 36 | 36 |
 
 Vector timing includes embedding and HTTP latency. The four-runbook workload does not establish a general retrieval-speed ranking.
 
 ## Evidence and limits
 
-- [Latest workflow result](../evaluations/results/eval-8881397d2059.json).
-- [Planner boundary checks](../evaluations/results/planner-779ddf407eb6.json).
+- [Latest workflow result](../evaluations/results/eval-0ebc2478b3a7.json).
+- [Planner boundary checks](../evaluations/results/planner-63ae4c53ef28.json).
 - [Previous 18-case result](../evaluations/results/eval-5d6d1cdb82ba.json) and the original six-case result remain unchanged.
 - The baseline/holdout labels are preserved for historical comparison. The twelve original holdout cases have now informed changes and are development regression cases, not independent unseen validation. New independent cases and repeated runs are still needed.
 - All data is synthetic. One local run per case does not establish production accuracy or reliability. Planner boundary cases were authored for this change and do not contribute to the 18-case score.
@@ -69,3 +71,7 @@ Vector timing includes embedding and HTTP latency. The four-runbook workload doe
 - An initial benchmark attempt, eval-1259f67587a6, was stopped during development review before the final handoff wording. Its local partial evidence is retained and no aggregate score was published.
 
 No academy grade or general accuracy score is claimed.
+
+## Security update
+
+The current measurements were rerun after enabling required authentication, broader privacy filtering and operational diagnostics. All 18 workflow cases still passed. The API and frontend proxy require authentication and match the complete latest result. See [security verification](SECURITY_VERIFICATION.md) for detailed evidence and remaining production work.

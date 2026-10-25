@@ -19,7 +19,7 @@ export function ReportsPage({
         <h2>Portable investigation report</h2>
         <p>
           Export the hypothesis, supporting quotations, uncertainties, recovery
-          plan, and actual provider provenance as Markdown.
+          plan, and actual provider provenance as a Word document (.docx).
         </p>
         <button
           className="primary"

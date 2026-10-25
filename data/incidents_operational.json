@@ -1,0 +1,72 @@
+[
+  {
+    "id": "operational-oracle-table",
+    "title": "operational oracle table",
+    "service": "integration-server",
+    "logs": "2026-08-25 12:04 Adapter call failed: ORA-01653 unable to extend table APP.EVENTS by 128 in tablespace APP_DATA. No connection pool metrics were collected.",
+    "expected_status": "awaiting_approval",
+    "expected_tool": "search_runbooks",
+    "expected_category": "database_storage",
+    "expected_document": "rb-storage"
+  },
+  {
+    "id": "operational-oracle-lob",
+    "title": "operational oracle lob",
+    "service": "integration-server",
+    "logs": "2026-08-25 12:04 Audit write failed: ORA-01691 unable to extend lob segment APP.PAYLOAD by 128 in tablespace APP_DATA.",
+    "expected_status": "awaiting_approval",
+    "expected_tool": "search_runbooks",
+    "expected_category": "database_storage",
+    "expected_document": "rb-storage"
+  },
+  {
+    "id": "operational-pbkdf2",
+    "title": "operational pbkdf2",
+    "service": "integration-server",
+    "logs": "Two thread dumps 30 seconds apart show 750 threads in Basic Authentication password verification (PBKDF2). CPU saturated at 95%. Request rate baseline is unavailable.",
+    "expected_status": "awaiting_approval",
+    "expected_tool": "search_runbooks",
+    "expected_category": "authentication_load",
+    "expected_document": "rb-auth-load"
+  },
+  {
+    "id": "operational-mixed-symptoms",
+    "title": "operational mixed symptoms",
+    "service": "integration-server",
+    "logs": "HTTP 408 Request Timed Out. JDBC pool reports connection not available (error code 107). Thread dump: PBKDF2 password verification. CPU saturated at 95%. These observations may be from different nodes; correlation is unavailable.",
+    "expected_status": "awaiting_approval",
+    "expected_tool": "search_runbooks",
+    "expected_category": "authentication_load",
+    "expected_document": "rb-auth-load",
+    "acceptable_categories": [
+      "authentication_load",
+      "timeout",
+      "connection_pool"
+    ],
+    "acceptable_documents": [
+      "rb-auth-load",
+      "rb-timeout",
+      "rb-pool"
+    ]
+  },
+  {
+    "id": "operational-late-evidence",
+    "title": "operational late evidence",
+    "service": "integration-server",
+    "logs": "INFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nINFO health-check heartbeat completed normally.\nERROR status=401 invalid_token token expired trace_id=late-auth",
+    "expected_status": "awaiting_approval",
+    "expected_tool": "search_runbooks",
+    "expected_category": "authentication",
+    "expected_document": "rb-auth"
+  },
+  {
+    "id": "operational-unknown-domain",
+    "title": "operational unknown domain",
+    "service": "integration-server",
+    "logs": "Adapter ZXQ912 rejects a custom payload with internal error code 78123. No documented runbook describes this error.",
+    "expected_status": "needs_human",
+    "expected_tool": "search_runbooks",
+    "expected_category": "unknown",
+    "expected_document": null
+  }
+]

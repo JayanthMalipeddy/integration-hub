@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { AccessGate } from "./components/AccessGate";
+import { ConfirmDialog } from "./components/ConfirmDialog";
 import { useHub } from "./hooks/useHub";
 import { RunPicker } from "./components/RunPicker";
 import { RunList } from "./components/RunList";
@@ -13,40 +16,22 @@ import { MemoryPage } from "./pages/MemoryPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import {
-  Activity,
-  Bot,
-  BookOpen,
   ChevronRight,
-  ClipboardList,
-  Database,
-  FileText,
   GitBranch,
-  Layers,
   Moon,
-  Play,
+  Plus,
   RefreshCw,
-  Search,
-  Settings,
   ShieldCheck,
   Sun,
   X,
+  Menu,
+  Radio,
 } from "lucide-react";
 import { api } from "./lib/api";
-const pages = [
-  ["Overview", Activity],
-  ["Agent workspace", Bot],
-  ["Knowledge library", BookOpen],
-  ["Incident analysis", Search],
-  ["RCA investigation", GitBranch],
-  ["Execution timeline", Layers],
-  ["Analytics & evaluations", Activity],
-  ["Provider configuration", Database],
-  ["Memory", ClipboardList],
-  ["Reports & exports", FileText],
-  ["Settings", Settings],
-] as const;
+import { navigation } from "./lib/navigation";
 export function App() {
   const hub = useHub();
+  const [menuOpen, setMenuOpen] = useState(false);
   const {
     page,
     setPage,
@@ -63,100 +48,170 @@ export function App() {
     act,
     approve,
     waiting,
+    connection,
+    lastUpdated,
+    refreshing,
   } = hub;
+  if (hub.authenticationRequired)
+    return (
+      <AccessGate error={hub.connectionError || error} refresh={refresh} />
+    );
   const view = {
     ...hub,
     runPicker: <RunPicker {...hub} />,
     runList: <RunList {...hub} />,
   };
+  const current =
+    navigation.find((item) => item.label === page) || navigation[0];
+  const navigate = (label: string) => {
+    setPage(label);
+    setMenuOpen(false);
+  };
   return (
     <div className="shell">
-      <aside>
-        <a className="brand" href="#" onClick={() => setPage("Overview")}>
-          <span className="brand-symbol">
-            <GitBranch size={24} />
-          </span>
-          <span>
-            Integration<span className="brand-sub">HUB</span>
-          </span>
-        </a>
-        <div className="workspace-label">
-          OPERATIONS WORKSPACE <span>W3</span>
+      <a className="skip-link" href="#workspace-content">
+        Skip to main content
+      </a>
+      <aside className={menuOpen ? "navigation-open" : ""}>
+        <div className="brand-row">
+          <a
+            className="brand"
+            href="#overview"
+            onClick={(event) => {
+              event.preventDefault();
+              navigate("Overview");
+            }}
+          >
+            <span className="brand-symbol">
+              <GitBranch size={24} />
+            </span>
+            <span>
+              Integration<span className="brand-sub">HUB / OPERATIONS</span>
+            </span>
+          </a>
+          <button
+            className="mobile-menu icon-button"
+            aria-label="Toggle navigation"
+            aria-expanded={menuOpen}
+            aria-controls="workspace-navigation"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
-        <nav>
-          {pages.map(([label, Icon]) => (
-            <button
-              key={label}
-              className={page === label ? "active" : ""}
-              onClick={() => setPage(label)}
-            >
-              <Icon size={18} />
-              {label}
-              {label === "RCA investigation" && waiting > 0 && (
-                <span className="nav-count">{waiting}</span>
-              )}
-            </button>
+        <nav id="workspace-navigation" aria-label="Main navigation">
+          {["Workspace", "Intelligence", "Administration"].map((group) => (
+            <div className="nav-group" key={group}>
+              <span className="nav-group-label">{group}</span>
+              {navigation
+                .filter((item) => item.group === group)
+                .map(({ label, icon: Icon }) => (
+                  <button
+                    key={label}
+                    aria-current={page === label ? "page" : undefined}
+                    className={page === label ? "active" : ""}
+                    onClick={() => navigate(label)}
+                  >
+                    <Icon size={18} />
+                    <span>{label}</span>
+                    {label === "RCA investigation" && waiting > 0 && (
+                      <span
+                        className="nav-count"
+                        aria-label={`${waiting} awaiting review`}
+                      >
+                        {waiting}
+                      </span>
+                    )}
+                  </button>
+                ))}
+            </div>
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <ShieldCheck size={19} />
+          <ShieldCheck size={20} />
           <div>
-            Approval required<small>Recovery actions require approval</small>
+            Human-controlled recovery
+            <small>Review every proposed action.</small>
           </div>
         </div>
         <button
           className="theme"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}{" "}
+          {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
           {theme === "dark" ? "Light" : "Dark"} appearance
         </button>
       </aside>
       <div className="main">
         <header>
           <div className="breadcrumb">
-            Workspace <ChevronRight size={14} /> <span>{page}</span>
+            {current.group}
+            <ChevronRight size={14} />
+            <span>{page}</span>
           </div>
           <div className="header-right">
-            <span className="live-dot" />
-            <span>{config.profile || "Connecting"}</span>
+            <span className="profile-chip">
+              <Radio size={14} />
+              {String(config.profile || "Connecting").replaceAll("_", " ")}
+            </span>
+            <span
+              className={`connection ${connection}`}
+              role="status"
+              title={
+                lastUpdated
+                  ? `Last successful sync: ${new Date(lastUpdated).toLocaleString()}`
+                  : "No successful sync yet"
+              }
+            >
+              <span className="connection-dot" />
+              {connection === "connected"
+                ? "Connected"
+                : connection === "stale"
+                  ? "Sync unavailable"
+                  : "Connecting"}
+            </span>
             <button
               className="icon-button"
               aria-label="Refresh data"
+              disabled={refreshing}
               onClick={() => void refresh()}
             >
-              <RefreshCw size={17} />
+              <RefreshCw size={17} className={refreshing ? "spin" : ""} />
             </button>
-            <span className="avatar">JK</span>
           </div>
         </header>
-        <main>
+        <main id="workspace-content" tabIndex={-1}>
           <div className="page-heading">
             <div>
-              <div className="eyebrow">INTEGRATION HUB</div>
-              <h1>{page === "Overview" ? "Investigations" : page}</h1>
-              <p>
-                {page === "Overview"
-                  ? "Review API errors, runbook references and proposed fixes."
-                  : "Review the details and decide what to do next."}
-              </p>
+              <div className="eyebrow">{current.group}</div>
+              <h1>{current.title}</h1>
+              <p>{current.description}</p>
             </div>
             {page === "Overview" && (
               <button
                 className="primary"
-                onClick={() => setPage("Agent workspace")}
+                onClick={() => navigate("Agent workspace")}
               >
-                <Play size={16} />
+                <Plus size={18} />
                 New investigation
               </button>
             )}
           </div>
           {error && (
             <div className="alert error" role="alert">
-              {error}
+              <span>{error}</span>
               <button aria-label="Dismiss error" onClick={() => setError("")}>
-                <X size={16} />
+                <X size={18} />
               </button>
+            </div>
+          )}
+          {connection === "stale" && (
+            <div className="alert" role="status">
+              Showing previously loaded data.{" "}
+              {lastUpdated &&
+                `Last synced ${new Date(lastUpdated).toLocaleTimeString()}.`}{" "}
+              Reconnecting automatically.
+              <button onClick={() => void refresh()}>Retry now</button>
             </div>
           )}
           {notice && (
@@ -176,50 +231,47 @@ export function App() {
           {page === "Reports & exports" && <ReportsPage {...view} />}
           {page === "Settings" && <SettingsPage {...view} />}
           <footer>
-            Integration Hub <span>Logs, runbooks and recovery plans.</span>
+            <span>Integration Hub</span>
+            <span>Evidence first. Human decision. Traceable outcome.</span>
           </footer>
         </main>
       </div>
       {confirmAction && (
-        <div className="modal-backdrop">
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="confirm-title"
-          >
-            <ShieldCheck size={30} />
-            <h2 id="confirm-title">
-              {confirmAction === "approve"
-                ? "Approve this recovery plan?"
-                : "Delete this memory?"}
-            </h2>
-            <p>
-              {confirmAction === "approve"
-                ? "This creates a local ticket and retains the hypothesis shown in this investigation. Review the evidence and uncertainty before continuing."
-                : "This removes the memory record. The original investigation and audit trace remain."}
-            </p>
-            <div className="actions">
-              <button onClick={() => setConfirmAction(null)}>Cancel</button>
-              <button
-                className="primary"
-                disabled={busy}
-                onClick={() =>
-                  confirmAction === "approve"
-                    ? void approve(true)
-                    : void act(async () => {
-                        await api("/memory/" + confirmAction.split(":")[1], {
-                          method: "DELETE",
-                        });
-                        setConfirmAction(null);
-                      })
-                }
-              >
-                Confirm
-              </button>
+        <ConfirmDialog
+          title={
+            confirmAction === "approve"
+              ? "Approve this recovery plan?"
+              : "Delete this memory?"
+          }
+          busy={busy}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={() =>
+            confirmAction === "approve"
+              ? void approve(true)
+              : void act(async () => {
+                  await api("/memory/" + confirmAction.split(":")[1], {
+                    method: "DELETE",
+                  });
+                  setConfirmAction(null);
+                })
+          }
+        >
+          <p>
+            {confirmAction === "approve"
+              ? "This creates a local ticket and retains the hypothesis shown in this investigation. It does not change an external system. Review the evidence and uncertainty before continuing."
+              : "This removes the memory record. The original investigation and audit trace remain."}
+          </p>
+          {confirmAction === "approve" && hub.finding && (
+            <div className="decision-preview">
+              <strong>{hub.run?.incident.title}</strong>
+              <p>{hub.finding.hypothesis}</p>
+              <small>
+                {hub.finding.citations.length} cited passages · Review the
+                proposed recovery steps in the investigation.
+              </small>
             </div>
-          </div>
-        </div>
+          )}
+        </ConfirmDialog>
       )}
     </div>
   );

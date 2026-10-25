@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from backend.app.config import Settings
 from backend.app.main import create_app
 from backend.app.models import Decision, Finding
+from backend.app.evidence import ground_finding
 from backend.app.providers import (HTTPProvider, ProviderError, FallbackLLM, LocalMemory,
                                    OpenAICompatibleLLM, OllamaLLM, ChromaKnowledge)
 from backend.app.security import redact
@@ -39,7 +40,7 @@ class FixtureKnowledge:
 
 
 def build(tmp_path, llm=None, knowledge=None):
-    settings = Settings(data_dir=tmp_path)
+    settings = Settings(data_dir=tmp_path, require_auth=False)  # Explicit unauthenticated test fixture.
     store = Store(tmp_path)
     store.put('document','local','doc',{'id':'doc','title':'Auth runbook','text':DOC})
     providers = SimpleNamespace(llm=llm or FixtureLLM(), knowledge=knowledge or FixtureKnowledge(),
@@ -89,6 +90,7 @@ def test_injection_hands_off_before_llm(tmp_path,bad):
 def test_fabricated_citation_and_wrong_category_fail():
     f=FixtureLLM().generate([],Finding.model_json_schema())['content']
     evidence=FixtureKnowledge().search('local','')
+    f=ground_finding(f,evidence,LOG)
     assert validate_finding(f,evidence,LOG)['passed']
     f['citations'][1]['source_id']='invented'
     assert not validate_finding(f,evidence,LOG)['passed']
@@ -118,18 +120,23 @@ def test_empty_retrieval_hands_off(tmp_path):
     assert flow.run(state())['status']=='needs_human'
 
 
-def test_invalid_structured_output_stops_workflow(tmp_path):
+def test_invalid_planner_output_hands_off_without_tool_execution(tmp_path):
     class Invalid:
         def generate(self,*args): return {'content':{'tool':'execute_shell'}}
     _,store,_,flow=build(tmp_path,llm=Invalid())
-    assert flow.run(state())['status']=='failed'
+    result = flow.run(state())
+    assert result['status']=='needs_human'
+    assert result['decision']['tool']=='request_human'
+    assert 'valid search request' in result['error']
+    assert len(result['calls']) == 1
     assert not store.list('ticket','local')
 
 
 def test_budget_stops_model_call(tmp_path):
     s,_,_,flow=build(tmp_path);s.max_tokens=1
     result=flow.run(state())
-    assert result['status']=='failed' and 'budget' in result['error']
+    assert result['status']=='needs_human' and 'budget' in result['error']
+    assert not result['calls'] and result['questions']
 
 
 def test_tenant_isolation_and_redaction(tmp_path):
@@ -215,7 +222,8 @@ def test_api_run_approve_export(tmp_path):
         r=c.post('/api/runs',json={'title':'Auth issue','logs':LOG}).json()
         id=r['id']
         assert c.get('/api/runs/'+id).json()['status']=='awaiting_approval'
-        assert c.post(f'/api/runs/{id}/approval',json={'approved':True}).status_code==200
+        review=c.get('/api/runs/'+id).json()['review_digest']
+        assert c.post(f'/api/runs/{id}/approval',json={'approved':True,'review_digest':review}).status_code==200
         assert c.get('/api/runs/'+id).json()['status']=='completed'
         assert c.post(f'/api/runs/{id}/approval',json={'approved':True}).status_code==409
         assert 'Hypothesis' in c.get(f'/api/runs/{id}/report').text

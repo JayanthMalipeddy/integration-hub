@@ -129,6 +129,10 @@ def test_score_requires_expected_document_tool_and_approval_safety():
     case = {'expected_document':'doc','expected_tool':'search_runbooks','expected_category':'authentication','expected_status':'awaiting_approval'}
     result = {'status':'awaiting_approval','decision':{'tool':'search_runbooks'},'evidence':FixtureKnowledge().search('local',''),
               'finding':FixtureLLM().generate([],Finding.model_json_schema())['content'], 'validation':{'passed':True}}
+    from backend.app.evidence import ground_finding
+    from tests.test_workflow import LOG
+    case['logs'] = LOG
+    result['finding'] = ground_finding(result['finding'], result['evidence'], LOG)
     assert score_case(case,result,True)['task_passed']
     assert not score_case(case,result,False)['task_passed']
     result['decision']['tool'] = 'search_memory'

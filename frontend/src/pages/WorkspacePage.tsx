@@ -40,49 +40,59 @@ export function WorkspacePage({
           Paste a small, sanitized log excerpt. The agent will select a
           read-only tool and build a reviewable hypothesis.
         </p>
-        <label>
-          Incident title
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={160}
-            placeholder="e.g. Customer API returns 401"
-          />
-        </label>
-        <label>
-          Affected service
-          <input
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-            maxLength={80}
-          />
-        </label>
-        <label>
-          Log evidence
-          <textarea
-            className="code-input"
-            rows={10}
-            value={logs}
-            onChange={(e) => setLogs(e.target.value)}
-            maxLength={12000}
-            placeholder="Paste timestamps, HTTP errors and correlation IDs…"
-          />
-        </label>
-        <div className="form-footer">
-          <small>{logs.length}/12,000 characters</small>
-          <button
-            className="primary"
-            disabled={busy || title.length < 3 || logs.length < 3}
-            onClick={start}
-          >
-            {busy ? (
-              <LoaderCircle className="spin" size={16} />
-            ) : (
-              <Play size={16} />
-            )}
-            Start investigation
-          </button>
-        </div>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!busy && title.length >= 3 && logs.length >= 3) void start();
+          }}
+        >
+          <label>
+            Incident title
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={160}
+              placeholder="e.g. Customer API returns 401"
+            />
+          </label>
+          <label>
+            Affected service
+            <input
+              value={service}
+              onChange={(e) => setService(e.target.value)}
+              maxLength={80}
+            />
+          </label>
+          <label>
+            Log evidence
+            <textarea
+              className="code-input"
+              rows={10}
+              value={logs}
+              onChange={(e) => setLogs(e.target.value)}
+              maxLength={12000}
+              placeholder="Paste timestamps, HTTP errors and correlation IDs…"
+            />
+          </label>
+          <p className="muted">
+            A title and log evidence of at least three characters are required.
+          </p>
+          <div className="form-footer">
+            <small>{logs.length}/12,000 characters</small>
+            <button
+              className="primary"
+              disabled={busy || title.length < 3 || logs.length < 3}
+              type="submit"
+            >
+              {busy ? (
+                <LoaderCircle className="spin" size={16} />
+              ) : (
+                <Play size={16} />
+              )}
+              Start investigation
+            </button>
+          </div>
+        </form>
       </section>
       <section>
         <h2>Available tools</h2>

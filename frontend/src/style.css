@@ -1122,3 +1122,21 @@ footer {
     transition: none !important;
   }
 }
+
+.access-gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.access-gate section {
+  width: min(100%, 520px);
+}
+.access-gate form {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0;
+}
+.access-gate h1 {
+  line-height: 1.2;
+}
